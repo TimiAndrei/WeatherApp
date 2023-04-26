@@ -82,3 +82,12 @@ body {
   p {
     color: #e64a19;
   }
+
+#btn-loc{
+  display: block;
+  width: 20%;
+  margin-left: auto;
+  margin-right: auto;
+  margin-top: 50px;
+  margin-bottom: 50px;
+}
