@@ -30,7 +30,39 @@
     integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
     crossorigin="anonymous"></script>
 
-  <a href="/locatie_automata" class ="btn btn-danger" id="btn-loc">Preia automat locatia</a>
+  <script>
+    function select_city() {
+      document.getElementById("dropdown_menu").classList.toggle("show");
+    }
+
+    function match_city() {
+      var input, city_to_find, ul, li, a, i;
+      input = document.getElementById("city_input");
+      city_to_find = input.value.toUpperCase();
+      div = document.getElementById("dropdown_menu");
+      a = div.getElementsByTagName("a");
+      for (i = 0; i < a.length; i++) {
+        txtValue = a[i].textContent || a[i].innerText;
+        if (txtValue.toUpperCase().indexOf(city_to_find) > -1) {
+          a[i].style.display = "";
+        } else {
+          a[i].style.display = "none";
+        }
+      }
+    }
+  </script>
+  <div class="dropdown">
+    <button onclick="select_city()" class="dropbtn">Alege un oras</button>
+    <div id="dropdown_menu" class="dropdown-content">
+      <input type="text" placeholder="Search.." id="city_input" onkeyup="match_city()">
+      <% if(orase.length){ for(var i=0; i< orase.length; i++) {%>
+        <a href="/<%= orase[i].nume%>">
+          <%= orase[i].nume%>
+        </a>
+        <% } } %>
+    </div>
+  </div>
+  <a href="/locatie_automata" class="btn btn-danger" id="btn-loc">Preia automat locatia</a>
   <div class="container">
 
     <!-- This shall hold the input fields and the output data -->
