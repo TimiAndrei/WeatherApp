@@ -23,6 +23,18 @@ app.get("/", function (req, res) {
     res.render("index", { weather: null, error: null });
 });
 
+app.get("/users/register", (req, res) => {
+    res.render("register");
+});
+
+app.get("/users/login", (req, res) => {
+    res.render("login");
+});
+
+app.get("/users/dashboard", (req, res) => {
+    res.render("dashboard", { user: "John Doe" });
+});
+
 app.post('/', function (req, res) {
 
     // Get city name passed in the form
@@ -91,4 +103,4 @@ app.post('/', function (req, res) {
 
 app.listen(5000, function () {
     console.log("Weather app listening on port 5000!");
-  });
+});
