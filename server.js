@@ -6,6 +6,11 @@ const bcrypt = require("bcrypt");
 const { pool } = require("./dbConfig");
 const session = require("express-session");
 const flash = require("express-flash");
+const passport = require("passport");
+
+const initializePassport = require("./passportConfig");
+
+initializePassport(passport);
 require("dotenv").config();
 
 const apiKey = `${process.env.API_KEY}`;
@@ -20,6 +25,10 @@ app.use(session({
 
     saveUninitialized: false
 }));
+
+app.use(passport.initialize());
+app.use(passport.session());
+
 app.use(flash());
 app.set("view engine", "ejs");
 
@@ -58,7 +67,6 @@ app.post("/users/register", async (req, res) => {
     }
 
     if (errors.length > 0) {
-        console.log(errors);
         res.render("register", { errors });
     } else {
         let encryptedPass = await bcrypt.hash(password, 10);
@@ -104,8 +112,6 @@ app.post('/', function (req, res) {
             res.render('index', { weather: null, error: 'Error, please try again' });
         } else {
             let weather = JSON.parse(body);
-
-            console.log(weather);
 
             if (weather.main == undefined) {
                 res.render('index', { weather: null, error: 'Error, please try again' });
@@ -153,6 +159,12 @@ app.post('/', function (req, res) {
         }
     })
 });
+
+app.post("/users/login", passport.authenticate('local', {
+    successRedirect: "/users/dashboard",
+    failureRedirect: "/users/login",
+    failureFlash: true
+}));
 
 app.listen(5000, function () {
     console.log("Weather app listening on port 5000!");
