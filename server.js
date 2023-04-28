@@ -37,16 +37,24 @@ app.get("/", function (req, res) {
     res.render("index", { weather: null, error: null });
 });
 
-app.get("/users/register", (req, res) => {
+app.get("/users/register", checkAuthenticated, (req, res) => {
     res.render("register");
 });
 
-app.get("/users/login", (req, res) => {
+app.get("/users/login", checkAuthenticated, (req, res) => {
     res.render("login");
 });
 
-app.get("/users/dashboard", (req, res) => {
-    res.render("dashboard", { user: "John Doe" });
+app.get("/users/dashboard", checkNotAuthenticated, (req, res) => {
+    res.render("dashboard", { user: req.user.name });
+});
+
+app.get("/users/logout", (req, res) => {
+    req.logout(req.user, err => {
+        if (err) return next(err);
+        req.flash('success_msg', "You have logged out successfully!");
+        res.redirect("/");
+    });
 });
 
 app.post("/users/register", async (req, res) => {
@@ -165,6 +173,20 @@ app.post("/users/login", passport.authenticate('local', {
     failureRedirect: "/users/login",
     failureFlash: true
 }));
+
+function checkAuthenticated(req, res, next) {
+    if (req.isAuthenticated()) {
+        return res.redirect("/users/dashboard");
+    }
+    next();
+}
+
+function checkNotAuthenticated(req, res, next) {
+    if (req.isAuthenticated()) {
+        return next();
+    }
+    res.redirect("/users/login");
+}
 
 app.listen(5000, function () {
     console.log("Weather app listening on port 5000!");
