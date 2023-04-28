@@ -2,7 +2,7 @@
 <html lang="en">
 
 <head>
-  <title>Weather</title>
+  <title>WeatherApp</title>
   <!-- Required meta tags -->
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
@@ -11,10 +11,12 @@
   <!-- Use some bootstrap CSS and google fonts to quicken the process -->
   <!-- you shall also add a favicon -->
   <link rel="shortcut icon" href="https://img.icons8.com/office/16/000000/sunset--v2.png" type="image/x-icon" />
+  
   <link rel="stylesheet" type="text/css" href="/css/style.css" />
   <link href="https://fonts.googleapis.com/css?family=Open+Sans:300" rel="stylesheet" type="text/css" />
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
     integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous" />
+    <link rel="stylesheet" type="text/css" href="/css/bootstrap.css" />
 </head>
 
 <body>
@@ -51,59 +53,63 @@
       }
     }
   </script>
-  <div class="dropdown">
-    <button onclick="select_city()" class="dropbtn">Alege un oras</button>
-    <div id="dropdown_menu" class="dropdown-content">
-      <input type="text" placeholder="Search.." id="city_input" onkeyup="match_city()">
-      <% if(orase.length){ for(var i=0; i< orase.length; i++) {%>
-        <a href="/<%= orase[i].nume%>">
-          <%= orase[i].nume%>
-        </a>
-        <% } } %>
-    </div>
-  </div>
-  <a href="/locatie_automata" class="btn btn-danger" id="btn-loc">Preia automat locatia</a>
+  
+  
   <div class="container">
+    <div class="container">
 
-    <!-- This shall hold the input fields and the output data -->
-    <fieldset>
-      <!-- This form shall be used to fetch your city name -->
-      <form action="/" method="post">
-        <input name="city" type="text" class="ghost-input" placeholder="Enter a City" required>
-        <input type="submit" class="ghost-button" value="Get Weather">
-      </form>
+      <!-- This shall hold the input fields and the output data -->
+      <fieldset>
+        <!-- This form shall be used to fetch your city name -->
+        <form action="/" method="post">
+          <input name="city" type="text" class="form-control" placeholder="Enter a city" required id="get_city">
+          <input type="submit" class="btn btn-outline-light" value="Get Weather" id="submit_city">
+        </form>
 
-      <!-- Upon fetching of data you will display it -->
-      <%if( weather !==null){ %>
-        <div class="grid">
-          <p>
-            <%= place %>
-          </p>
-          <p class="text-muted small">
-            <%= timezone %>
-          </p>
+        <a href="/locatie_automata" class="btn btn-primary" id="btn-loc">Automatic Location</a>
+        <div class="dropdown">
+          <button onclick="select_city()" class="dropbtn btn btn-success">Choose City</button>
+          <div id="dropdown_menu" class="dropdown-content">
+            <input type="text" placeholder="Search.." id="city_input" onkeyup="match_city()">
+            <% if(orase.length){ for(var i=0; i< orase.length; i++) {%>
+              <a href="/<%= orase[i].nume%>">
+                <%= orase[i].nume%>
+              </a>
+              <% } } %>
+          </div>
         </div>
 
-        <!-- You can find other data fetched by the app on the console in JSON form and display it as you please -->
-        <div class="card-deck">
-          <div class="card card-accent-dark mb-3" style="max-width: 18rem;">
-            <div class="card-header">Summary</div>
-            <div class="card-body text-dark">Bootstrap CSS
-              <img src="<%= icon %>" alt="Weather-Icon">
-              <h5 class="card-title">Temperature</h5>
-              <p class="card-text">
-                In Degrees:
-                <%= temp %>°C/
-                  <%= fahrenheit %>°F
-              </p>
-              <h5 class="card-title">Main</h5>
-              <p class="card-text">
-                <%= main %>
-              </p>
-            </div>
+        <!-- Upon fetching of data you will display it -->
+        <%if( weather !==null){ %>
+          <div class="alert alert-dismissible alert-primary" id="nume_oras">
+            <p>
+              <%= place %>
+            </p>
+            <p class="text-muted small">
+              <%= timezone %>
+            </p>
           </div>
+
+          <!-- You can find other data fetched by the app on the console in JSON form and display it as you please -->
           <div class="card-deck">
-            <div class="card card-acTomorrowcent-dark mb-3" style="max-width: 18rem;">
+            <div class="card border-info mb-3" style="max-width: 18rem;">
+              <div class="card-header">Summary</div>
+              <div class="card-body text-dark">
+                <img src="<%= icon %>" alt="Weather-Icon">
+                <h5 class="card-title">Temperature</h5>
+                <p class="card-text">
+                  In Degrees:
+                  <%= temp %>°C/
+                    <%= fahrenheit %>°F
+                </p>
+                <h5 class="card-title">Main</h5>
+                <p class="card-text">
+                  <%= main %>
+                </p>
+              </div>
+            </div>
+
+            <div class="card border-info mb-3" style="max-width: 18rem;">
               <div class="card-header">Description</div>
               <div class="card-body text-dark">
                 <h5 class="card-title">Overall Description: </h5>
@@ -120,33 +126,32 @@
                 </p>
               </div>
             </div>
-            <div class="card-deck">
-              <div class="card card-accent-dark mb-3" style="max-width: 18rem;">
-                <div class="card-header">Other info</div>
-                <div class="card-body text-dark">
-                  <h5 class="card-title">Humidity: </h5>
-                  <p class="card-text">
-                    <%= humidity %> g.m-3
-                  </p>
-                </div>
-                <div class="card-body text-dark">
-                  <h5 class="card-title">Pressure: </h5>
-                  <p class="card-text">
-                    <%= pressure %> N·m−2
-                  </p>
-                </div>
+
+            <div class="card border-info mb-3" style="max-width: 18rem;">
+              <div class="card-header">Other info</div>
+              <div class="card-body text-dark">
+                <h5 class="card-title">Humidity: </h5>
+                <p class="card-text">
+                  <%= humidity %> g.m-3
+                </p>
+              </div>
+              <div class="card-body text-dark">
+                <h5 class="card-title">Pressure: </h5>
+                <p class="card-text">
+                  <%= pressure %> N·m−2
+                </p>
               </div>
             </div>
+          </div>
+          <% } %>
 
-            <% } %>
-
-              <% if(error !==null){ %>
-                <p>
-                  <%= error %>
-                </p>
-                <% } %>
-    </fieldset>
-  </div>
+            <% if(error !==null){ %>
+              <p>
+                <%= error %>
+              </p>
+              <% } %>
+      </fieldset>
+    </div>
 </body>
 
 </html>
