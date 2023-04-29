@@ -1,4 +1,4 @@
-.alert {
+.alert-primary {
     width: 50%;
     display: block;
     margin-left: auto;
@@ -13,7 +13,7 @@
 }
 
 .oras_fav {
-    margin-left: 16%;
+    margin-left: 0%;
     min-width: 50%;
     font-size: 2em;
 }
@@ -24,9 +24,13 @@
 }
 
 .temp {
-    margin-left: 20%;
+    margin-left: 0%;
     font-size: 2em;
 
+}
+
+.btn-close{
+    margin-left: 20%
 }
 
 img {

@@ -16,37 +16,37 @@ const apiKey = `${process.env.API_KEY}`;
 const user = `${process.env.USER}`;
 const pass = `${process.env.PASS}`;
 
-const client = 'timiandrei223@gmail.com'
+// const client = 'timiandrei223@gmail.com'
 
-function get_client_alert_data() {
-    return new Promise((resolve, reject) => {
-        pool.query('select email, oras_default from users WHERE alert = true', (err, result) => {
-            if (err) {
-                reject(err);
-            } else {
-                resolve({
-                    email: result.rows[0].email,
-                    oras_default: result.rows[0].oras_default
-                });
-            }
-        });
-    });
-}
+// function get_client_alert_data() {
+//     return new Promise((resolve, reject) => {
+//         pool.query('select email, oras_default from users WHERE alert = true', (err, result) => {
+//             if (err) {
+//                 reject(err);
+//             } else {
+//                 resolve({
+//                     email: result.rows[0].email,
+//                     oras_default: result.rows[0].oras_default
+//                 });
+//             }
+//         });
+//     });
+// }
 
 const cronJob = new CronJob('0 0 8 * * *', run);
 cronJob.start();
 
-async function test() {
-    try {
-        const client_data = await get_client_alert_data();
-        console.log(client_data);
-        console.log(client_data.oras_default);
-        console.log(client_data.email);
-    } catch (error) {
-        console.log('error', error);
-    }
-}
-test();
+// async function test() {
+//     try {
+//         const client_data = await get_client_alert_data();
+//         console.log(client_data);
+//         console.log(client_data.oras_default);
+//         console.log(client_data.email);
+//     } catch (error) {
+//         console.log('error', error);
+//     }
+// }
+// test();
 // ##########################################################################
 async function run() {
     try {
@@ -361,7 +361,19 @@ app.post('/', function (req, res) {
 
 app.get("/users/dashboard/:oras", function (req, res) {
 
-    let city = req.params.oras;
+    city = req.params.oras;
+    city = city.replace('ă', 'a');
+    city = city.replace('â', 'a');
+    city = city.replace('î', 'i');
+    city = city.replace('ș', 's');
+    city = city.replace('ş', 's');
+    city = city.replace('ț', 't');
+    city = city.replace('Ă', 'A');
+    city = city.replace('Â', 'A');
+    city = city.replace('Î', 'I');
+    city = city.replace('Ș', 'S');
+    city = city.replace('Ş', 'S');
+    city = city.replace('Ț', 'T');
 
     // Use that city name to fetch data
     // Use the API_KEY in the '.env' file
@@ -425,8 +437,22 @@ app.get("/users/dashboard/:oras", function (req, res) {
 
 app.get("/:oras", function (req, res) {
 
-    let city = req.params.oras;
+    city = req.params.oras;
 
+    city = city.replace('ă', 'a');
+    city = city.replace('â', 'a');
+    city = city.replace('î', 'i');
+    city = city.replace('ș', 's');
+    city = city.replace('ş', 's');
+    city = city.replace('ț', 't');
+    city = city.replace('Ă', 'A');
+    city = city.replace('Â', 'A');
+    city = city.replace('Î', 'I');
+    city = city.replace('Ș', 'S');
+    city = city.replace('Ş', 'S');
+    city = city.replace('Ț', 'T');
+
+    console.log(city);
     // Use that city name to fetch data
     // Use the API_KEY in the '.env' file
     let url = `http://api.openweathermap.org/data/2.5/weather?q=${city}&units=metric&appid=${apiKey}`;
@@ -491,6 +517,7 @@ var city_auto = '';
 
 var callback = function (res) {
     city_auto = res.city;
+    console.log(city_auto);
 };
 
 app.get("/locatie_automata", function (req, res) {
@@ -499,10 +526,12 @@ app.get("/locatie_automata", function (req, res) {
     // let ip = '188.24.29.24'; Cluj
     // Bucuresti
     let ip = '45.250.65.105';
-
+    console.log(ip);
     // Get city name passed in the form
     ipapi.location(callback, ip);
     let city = city_auto;
+    console.log(city);
+    console.log("da");
     // Use that city name to fetch data
     // Use the API_KEY in the '.env' file
     let url = `http://api.openweathermap.org/data/2.5/weather?q=${city}&units=metric&appid=${apiKey}`;
@@ -585,6 +614,105 @@ function checkNotAuthenticated(req, res, next) {
     res.redirect("/users/login");
 }
 
+app.get(["/add_city/:city", "/users/dashboard/add_city/:city"], checkNotAuthenticated, (req, res) => {
+    let city = req.params.city;
+    city = city.split(',')[0];
+
+    city = city.replace('ă', 'a');
+    city = city.replace('â', 'a');
+    city = city.replace('î', 'i');
+    city = city.replace('ș', 's');
+    city = city.replace('ş', 's');
+    city = city.replace('ț', 't');
+    city = city.replace('Ă', 'A');
+    city = city.replace('Â', 'A');
+    city = city.replace('Î', 'I');
+    city = city.replace('Ș', 'S');
+    city = city.replace('Ş', 'S');
+    city = city.replace('Ț', 'T');
+
+    const id = req.user.id;
+
+    pool.query('SELECT UNNEST(favorite) FROM users WHERE id = $1', [req.user.id], (err, result) => {
+        if (err) {
+            req.flash("error", "City could not be added to favorites");
+            const red = "/" + city;
+            return res.redirect(red);
+
+
+        } else {
+            // get rows as array
+            const rows = result.rows;
+            const fav = [];
+            for (let i = 0; i < rows.length; i++) {
+                fav.push(rows[i].unnest);
+            }
+
+            if (fav.includes(city)) {
+                req.flash("error", "City already in favorites");
+                const red = "/" + city;
+                return res.redirect(red);
+            } else if (result.rows.length == 0) {
+                pool.query('UPDATE users SET favorite = ARRAY[$1] WHERE id = $2', [city, id], (err, result) => {
+                    if (err) {
+                        throw err;
+                    } else {
+                        console.log("City added");
+                        req.flash("success_msg", "City added to favorites");
+                        const red = "/" + city;
+                        return res.redirect(red);
+                    }
+                });
+            } else {
+                pool.query('UPDATE users SET favorite = array_append(favorite, $1) WHERE id = $2', [city, id], (err, result) => {
+                    if (err) {
+                        throw err;
+                    } else {
+                        console.log("City added");
+                        req.flash("success_msg", "City added to favorites");
+                        const red = "/" + city;
+                        return res.redirect(red);
+                    }
+                });
+            }
+        }
+    });
+    console.log(city);
+    console.log(id);
+});
+
+app.get("/users/dashboard/remove_city/:city", checkNotAuthenticated, (req, res) => {
+    let city = req.params.city;
+    city = city.split(',')[0];
+
+    city = city.replace('ă', 'a');
+    city = city.replace('â', 'a');
+    city = city.replace('î', 'i');
+    city = city.replace('ș', 's');
+    city = city.replace('ş', 's');
+    city = city.replace('ț', 't');
+    city = city.replace('Ă', 'A');
+    city = city.replace('Â', 'A');
+    city = city.replace('Î', 'I');
+    city = city.replace('Ș', 'S');
+    city = city.replace('Ş', 'S');
+    city = city.replace('Ț', 'T');
+
+    const id = req.user.id;
+
+    pool.query('UPDATE users SET favorite = array_remove(favorite, $1) WHERE id = $2', [city, id], (err, result) => {
+        if (err) {
+            req.flash("error", "City could not be removed from favorites");
+            const red = "/users/dashboard";
+            return res.redirect(red);
+        } else {
+            console.log("City deleted");
+            req.flash("success_msg", "City removed from favorites");
+            const red = "/users/dashboard";
+            return res.redirect(red);
+        }
+    });
+});
 app.listen(5000, function () {
     console.log("Weather app listening on port 5000!");
 });
