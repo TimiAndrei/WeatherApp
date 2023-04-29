@@ -7,13 +7,107 @@ const { pool } = require("./dbConfig");
 const session = require("express-session");
 const flash = require("express-flash");
 const passport = require("passport");
-var ipapi = require('ipapi.co');
 const fs = require('fs'); const initializePassport = require("./passportConfig");
+const nodemailer = require('nodemailer');
+const mailgen = require('mailgen');
+const axios = require('axios');
+const CronJob = require('cron').CronJob;
+const apiKey = `${process.env.API_KEY}`;
+const user = `${process.env.USER}`;
+const pass = `${process.env.PASS}`;
+
+const client = 'timiandrei223@gmail.com';
+
+const cronJob = new CronJob('0 0 8 * * *', run);
+cronJob.start();
+
+async function run() {
+    try {
+        const weatherData = await getWeatherData('Bucharest');
+        await sendm(weatherData.current_weather, client);
+
+    } catch (error) {
+        console.log('error', error);
+    }
+}
+
+function getWeatherData(city) {
+    return axios.get(`http://api.openweathermap.org/data/2.5/weather?q=${city}&units=metric&appid=${apiKey}`).then(result_curr => {
+        return {
+            current_weather: result_curr.data,
+        }
+    }).catch(error => {
+        console.log('error', error);
+    })
+
+};
+getWeatherData('Bucharest');
+// we'll pass the client to the sendm function
+// si ulterior o sa fie iterata intr-un for pentru a trimite mailuri la toti userii din baza de date
+
+
+async function sendm(weather, client) {
+    console.log(weather);
+    let config = {
+        service: 'gmail',
+        auth: {
+            user: user,
+            pass: pass
+        }
+    };
+
+    let transporter = nodemailer.createTransport(config);
+
+    let mailgenerator = new mailgen({
+        theme: 'default',
+        product: {
+            name: 'WeatherApp',
+            link: 'http://localhost:5000'
+        },
+    });
+
+    let response = {
+        body: {
+            name: 'Friend',
+            intro: 'Be sure to take an umbrella with you today, it\'s going to rain!',
+            table: {
+                data: [
+                    {
+                        City: `${weather.name}`,
+                        Temperature: `${Math.round(weather.main.temp)}°C`,
+                        Humidity: `${weather.main.humidity} % `,
+                    }
+                ]
+            },
+            outro: 'Need help, or have questions? Just reply to this email, we\'d love to help.'
+        }
+    };
+
+    let mail = mailgenerator.generate(response);
+
+    let message = {
+        from: `WeatherApp user`,
+        to: client,
+        subject: 'Welcome to Weather App!',
+        html: mail
+    };
+
+    if (weather.weather[0].id.toString().charAt(0) == '8') {
+        await transporter.sendMail(message).then(() => {
+            console.log('mail sent succesfully');
+        }).catch(error => {
+            console.log('error occured');
+            console.log(error.message);
+        });
+    }
+}
+
+// sendm();
+
+var ipapi = require('ipapi.co');
 
 initializePassport(passport);
 require("dotenv").config();
-
-const apiKey = `${process.env.API_KEY}`;
 
 app.use(express.static("public"));
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -42,7 +136,6 @@ app.get("/", function (req, res) {
 
 });
 
-let orase_favorite_test = ["Bucharest", "Ploiesti", "Buzau", "Mizil", "Suceava"];
 
 class oras_favorit {
     constructor(name, temp, icon) {
@@ -52,15 +145,31 @@ class oras_favorit {
     }
 };
 
+app.get("/users/register", checkAuthenticated, (req, res) => {
+    res.render("register");
+});
 
-app.get("/orase_favorite", function (req, res) {
-    let fav_city = [];
+app.get("/users/login", checkAuthenticated, (req, res) => {
+    res.render("login");
+});
 
-    // Use that city name to fetch data
-    // Use the API_KEY in the '.env' file
+app.get("/users/dashboard", checkNotAuthenticated, (req, res) => {
+
+    let fav_city = ['Bucharest', 'Gaesti'];
     let promises = [];
-    for (let i = 0; i < orase_favorite_test.length; i++) {
-        let url = `http://api.openweathermap.org/data/2.5/weather?q=${orase_favorite_test[i]}&units=metric&appid=${apiKey}`;
+
+    let promise = new Promise((resolve, reject) => {
+        pool.query('Select favorite from users where id = $1', [req.user.id]).then(results => {
+            fav_city = results.rows;
+            resolve(fav_city);
+        }).catch(error => {
+            console.log(error);
+            reject(error);
+        });
+    });
+
+    for (let i = 0; i < fav_city.length; i++) {
+        let url = `http://api.openweathermap.org/data/2.5/weather?q=${fav_city[i]}&units=metric&appid=${apiKey}`;
         // we use promises to ensure that all requests are completed before we render the page
         let promise = new Promise((resolve, reject) => {
             request(url, function (err, response, body) {
@@ -83,25 +192,13 @@ app.get("/orase_favorite", function (req, res) {
     Promise.all(promises)
         .then((results) => {
             fav_city = results;
-            res.render("orase_favorite", { orase_favorite: fav_city });
-            console.log(orase_favorite_test);
+            res.render("dashboard", { orase_favorite: fav_city, user: req.user.name });
         })
         .catch((error) => {
             console.log(error);
             res.send("An error occurred.");
         });
-});
 
-app.get("/users/register", checkAuthenticated, (req, res) => {
-    res.render("register");
-});
-
-app.get("/users/login", checkAuthenticated, (req, res) => {
-    res.render("login");
-});
-
-app.get("/users/dashboard", checkNotAuthenticated, (req, res) => {
-    res.render("dashboard", { user: req.user.name });
 });
 
 app.get("/users/logout", (req, res) => {
@@ -224,7 +321,7 @@ app.post('/', function (req, res) {
     })
 });
 
-app.get("/:oras", function (req, res) {
+app.get("/users/dashboard/:oras", function (req, res) {
 
     let city = req.params.oras;
 
@@ -365,10 +462,6 @@ app.get("/locatie_automata", function (req, res) {
     })
 
 });
-
-
-
-
 
 app.post("/users/login", passport.authenticate('local', {
     successRedirect: "/users/dashboard",

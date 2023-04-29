@@ -15,8 +15,8 @@
   <link href="https://fonts.googleapis.com/css?family=Open+Sans:300" rel="stylesheet" type="text/css" />
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
     integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous" />
-    <link rel="stylesheet" type="text/css" href="/css/bootstrap.css" />
-    <link rel="stylesheet" href="/css/orase_favorite.css">
+  <link rel="stylesheet" type="text/css" href="/css/bootstrap.css" />
+  <link rel="stylesheet" href="/css/orase_favorite.css">
 </head>
 
 <body>
@@ -32,24 +32,20 @@
     integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
     crossorigin="anonymous"></script>
 
-  
+  <h2 id="titlu_fav">Favourite Cities</h2>
+  <% if(orase_favorite.length){ for(var i=0; i< orase_favorite.length; i++) {%>
+    <div class="alert alert-dismissible alert-primary">
+      <a href="/users/dashboard/<%= orase_favorite[i].name%>">
+        <%= orase_favorite[i].name%>
+      </a>
+      <div class="temp">
+        <%= orase_favorite[i].temp%>°C
+      </div>
+      <img src="<%= orase_favorite[i].icon %>" alt="Weather-Icon">
+    </div>
 
-      
+    <% }} %>
 
-        <h2 id="titlu_fav">Favourite Cities</h2>
-        <% if(orase_favorite.length){ for(var i=0; i< orase_favorite.length; i++) {%>
-              <div class="alert alert-dismissible alert-primary">
-                <a href="/<%= orase_favorite[i].name%>">
-                  <%= orase_favorite[i].name%>
-                </a>
-                <div class="temp">
-                  <%= orase_favorite[i].temp%>°C
-                </div>
-                <img src="<%= orase_favorite[i].icon %>" alt="Weather-Icon">
-              </div>
-              
-            <% }} %>
-        
 
 </body>
 
