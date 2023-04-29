@@ -16,13 +16,41 @@ const apiKey = `${process.env.API_KEY}`;
 const user = `${process.env.USER}`;
 const pass = `${process.env.PASS}`;
 
-const client = 'timiandrei223@gmail.com';
+const client = 'timiandrei223@gmail.com'
+
+function get_client_alert_data() {
+    return new Promise((resolve, reject) => {
+        pool.query('select email, oras_default from users WHERE alert = true', (err, result) => {
+            if (err) {
+                reject(err);
+            } else {
+                resolve({
+                    email: result.rows[0].email,
+                    oras_default: result.rows[0].oras_default
+                });
+            }
+        });
+    });
+}
 
 const cronJob = new CronJob('0 0 8 * * *', run);
 cronJob.start();
 
+async function test() {
+    try {
+        const client_data = await get_client_alert_data();
+        console.log(client_data);
+        console.log(client_data.oras_default);
+        console.log(client_data.email);
+    } catch (error) {
+        console.log('error', error);
+    }
+}
+test();
+// ##########################################################################
 async function run() {
     try {
+
         const weatherData = await getWeatherData('Bucharest');
         await sendm(weatherData.current_weather, client);
 
@@ -41,6 +69,7 @@ function getWeatherData(city) {
     })
 
 };
+
 getWeatherData('Bucharest');
 // we'll pass the client to the sendm function
 // si ulterior o sa fie iterata intr-un for pentru a trimite mailuri la toti userii din baza de date
@@ -170,7 +199,10 @@ app.get("/users/dashboard", checkNotAuthenticated, (req, res) => {
     function set_fav_city(value) {
         fav_city = value;
         console.log(fav_city.length);
+        console.log(fav_city);
+
         for (let i = 0; i < fav_city.length; i++) {
+            console.log(fav_city[i].unnest);
             let url = `http://api.openweathermap.org/data/2.5/weather?q=${fav_city[i].unnest}&units=metric&appid=${apiKey}`;
             // we use promises to ensure that all requests are completed before we render the page
             let promise = new Promise((resolve, reject) => {
