@@ -1,4 +1,4 @@
-.alert{
+.alert {
     width: 50%;
     display: block;
     margin-left: auto;
@@ -12,32 +12,39 @@
     padding-bottom: 0;
 }
 
-a{
+.oras_fav {
     margin-left: 16%;
     min-width: 50%;
     font-size: 2em;
 }
-a:hover{
+
+.oras_fav:hover {
     color: rgb(232, 50, 131);
     transition: 0.5s;
 }
-.temp{
+
+.temp {
     margin-left: 20%;
     font-size: 2em;
-    
+
 }
 
-img{
+img {
     margin: 0;
     margin-left: 10%;
-    
+
 }
 
-#titlu_fav{
+#titlu_fav {
     display: block;
     margin-left: auto;
     margin-right: auto;
     margin-top: 1em;
     margin-bottom: 1em;
     text-align: center;
+}
+
+#buton_special {
+    display: flex;
+    margin-right: 0;
 }

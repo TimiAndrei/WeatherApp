@@ -155,49 +155,55 @@ app.get("/users/login", checkAuthenticated, (req, res) => {
 
 app.get("/users/dashboard", checkNotAuthenticated, (req, res) => {
 
-    let fav_city = ['Bucharest', 'Gaesti'];
+    var fav_city = [];
     let promises = [];
 
-    let promise = new Promise((resolve, reject) => {
-        pool.query('Select favorite from users where id = $1', [req.user.id]).then(results => {
-            fav_city = results.rows;
-            resolve(fav_city);
-        }).catch(error => {
-            console.log(error);
-            reject(error);
-        });
+
+    pool.query('Select UNNEST(favorite) from users where id = $1', [req.user.id], (err, result) => {
+        if (err) {
+            throw err;
+        } else {
+            set_fav_city(result.rows);
+        }
     });
 
-    for (let i = 0; i < fav_city.length; i++) {
-        let url = `http://api.openweathermap.org/data/2.5/weather?q=${fav_city[i]}&units=metric&appid=${apiKey}`;
-        // we use promises to ensure that all requests are completed before we render the page
-        let promise = new Promise((resolve, reject) => {
-            request(url, function (err, response, body) {
-                if (err) {
-                    reject(err);
-                } else {
-                    let weather = JSON.parse(body);
-                    let oras = new oras_favorit(
-                        weather.name,
-                        weather.main.temp,
-                        `http://openweathermap.org/img/wn/${weather.weather[0].icon}@2x.png`
-                    );
-                    resolve(oras);
-                }
+    function set_fav_city(value) {
+        fav_city = value;
+        console.log(fav_city.length);
+        for (let i = 0; i < fav_city.length; i++) {
+            let url = `http://api.openweathermap.org/data/2.5/weather?q=${fav_city[i].unnest}&units=metric&appid=${apiKey}`;
+            // we use promises to ensure that all requests are completed before we render the page
+            let promise = new Promise((resolve, reject) => {
+                request(url, function (err, response, body) {
+                    if (err) {
+                        reject(err);
+                    } else {
+                        let weather = JSON.parse(body);
+                        console.log(weather);
+                        let oras = new oras_favorit(
+                            weather.name,
+                            weather.main.temp,
+                            `http://openweathermap.org/img/wn/${weather.weather[0].icon}@2x.png`
+                        );
+                        resolve(oras);
+                    }
+                });
             });
-        });
-        promises.push(promise);
+            promises.push(promise);
+        }
+
+        Promise.all(promises)
+            .then((results) => {
+                fav_city = results;
+                res.render("dashboard", { orase_favorite: fav_city, user: req.user.name });
+            })
+            .catch((error) => {
+                console.log(error);
+                res.send("An error occurred.");
+            });
     }
 
-    Promise.all(promises)
-        .then((results) => {
-            fav_city = results;
-            res.render("dashboard", { orase_favorite: fav_city, user: req.user.name });
-        })
-        .catch((error) => {
-            console.log(error);
-            res.send("An error occurred.");
-        });
+
 
 });
 
@@ -322,6 +328,70 @@ app.post('/', function (req, res) {
 });
 
 app.get("/users/dashboard/:oras", function (req, res) {
+
+    let city = req.params.oras;
+
+    // Use that city name to fetch data
+    // Use the API_KEY in the '.env' file
+    let url = `http://api.openweathermap.org/data/2.5/weather?q=${city}&units=metric&appid=${apiKey}`;
+
+    request(url, function (err, response, body) {
+
+        // On return, check the json data fetched
+        if (err) {
+            res.render('index', { weather: null, error: 'Error, please try again', orase: lista_orase });
+        } else {
+            let weather = JSON.parse(body);
+
+            if (weather.main == undefined) {
+                res.render('index', { weather: null, error: 'Error, please try again', orase: lista_orase });
+            } else {
+                // we shall use the data got to set up your output
+                let place = `${weather.name}, ${weather.sys.country}`,
+                    /* you shall calculate the current timezone using the data fetched*/
+                    weatherTimezone = `${new Date(
+                        weather.dt * 1000 - weather.timezone * 1000
+                    )}`;
+                let weatherTemp = `${weather.main.temp}`,
+                    weatherPressure = `${weather.main.pressure}`,
+                    /* you will fetch the weather icon and its size using the icon data*/
+                    weatherIcon = `http://openweathermap.org/img/wn/${weather.weather[0].icon}@2x.png`,
+                    weatherDescription = `${weather.weather[0].description}`,
+                    humidity = `${weather.main.humidity}`,
+                    clouds = `${weather.clouds.all}`,
+                    visibility = `${weather.visibility}`,
+                    main = `${weather.weather[0].main}`,
+                    weatherFahrenheit;
+                weatherFahrenheit = (weatherTemp * 9) / 5 + 32;
+
+                // you shall also round off the value of the degrees fahrenheit calculated into two decimal places
+                function roundToTwo(num) {
+                    return +(Math.round(num + "e+2") + "e-2");
+                }
+                weatherFahrenheit = roundToTwo(weatherFahrenheit);
+
+                res.render("index", {
+                    weather: weather,
+                    place: place,
+                    temp: weatherTemp,
+                    pressure: weatherPressure,
+                    icon: weatherIcon,
+                    description: weatherDescription,
+                    timezone: weatherTimezone,
+                    humidity: humidity,
+                    fahrenheit: weatherFahrenheit,
+                    clouds: clouds,
+                    visibility: visibility,
+                    main: main,
+                    error: null,
+                    orase: lista_orase
+                });
+            }
+        }
+    })
+});
+
+app.get("/:oras", function (req, res) {
 
     let city = req.params.oras;
 

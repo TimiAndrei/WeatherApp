@@ -62,7 +62,7 @@
 
   <% if(messages.success_msg) { %>
     <div class="alert alert-dismissible alert-success">
-      <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+      <button type="button" class="btn-close" data-dismiss="alert" aria-label="Close"></button>
       <strong>
         <%= messages.success_msg %>
       </strong>
@@ -70,14 +70,23 @@
     <% } %>
       <% if(messages.error) { %>
         <div class="alert alert-dismissible alert-danger">
-          <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+          <button type="button" class="btn-close" data-dismiss="alert" aria-label="Close"></button>
           <strong>
             <%= messages.error %>
           </strong>
         </div>
         <% } %>
-
-
+          <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+            <div class="container-fluid">
+              <a class="navbar-brand" href="#">Weather App</a>
+              <div class="float-right">
+                <a href="/users/register" class="btn btn-secondary">Register</a>
+                &nbsp;&nbsp;
+                <a href="/users/login" class="btn btn-secondary">Login</a>
+                &nbsp;&nbsp;
+              </div>
+            </div>
+          </nav>
           <div class="container">
 
             <!-- This shall hold the input fields and the output data -->
@@ -87,8 +96,7 @@
                 <input name="city" type="text" class="form-control" placeholder="Enter a city" required id="get_city">
                 <input type="submit" class="btn btn-outline-light" value="Get Weather" id="submit_city">
               </form>
-              <a href="/users/register" class="btn btn-secondary" id="btn-loc">Register</a>
-              <a href="/users/login" class="btn btn-secondary" id="btn-loc">Login</a>
+
               <a href="/locatie_automata" class="btn btn-primary" id="btn-loc">Automatic Location</a>
               <div class="dropdown">
                 <button onclick="select_city()" class="dropbtn btn btn-success">Choose City</button>

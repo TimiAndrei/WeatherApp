@@ -20,6 +20,17 @@
 </head>
 
 <body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#">Weather App</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarColor03"
+                aria-controls="navbarColor03" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <a href="/users/logout" class="btn btn-secondary" id="buton_special">Logout</a>
+
+        </div>
+    </nav>
     <!-- Optional JavaScript -->
     <!-- jQuery first, then Popper.js, then Bootstrap JS -->
     <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
@@ -31,12 +42,11 @@
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
         integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
         crossorigin="anonymous"></script>
-
     <h2 id="titlu_fav">Hello <%=user%>, Here are your Favourite Cities</h2>
 
     <% if(orase_favorite.length){ for(var i=0; i< orase_favorite.length; i++) {%>
         <div class="alert alert-dismissible alert-primary">
-            <a href="/users/dashboard/<%= orase_favorite[i].name%>">
+            <a class="oras_fav" href="/users/dashboard/<%= orase_favorite[i].name%>">
                 <%= orase_favorite[i].name%>
             </a>
             <div class="temp">
@@ -45,7 +55,6 @@
             <img src="<%= orase_favorite[i].icon %>" alt="Weather-Icon">
         </div>
         <% }} %>
-
 
 
 </body>
