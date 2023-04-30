@@ -78,12 +78,17 @@
         <% } %>
           <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
             <div class="container-fluid">
-              <a class="navbar-brand" href="#">Weather App</a>
+              <a class="navbar-brand" href="http://localhost:5000/">Weather App</a>
               <div class="float-right">
+                <a href="/users/dashboard" class="btn btn-secondary">Favourite Cities</a>
+                &nbsp;&nbsp;
+                <a href="/users/dashboard" class="btn btn-secondary">Dashboard</a>
+                &nbsp;&nbsp;
                 <a href="/users/register" class="btn btn-secondary">Register</a>
                 &nbsp;&nbsp;
                 <a href="/users/login" class="btn btn-secondary">Login</a>
                 &nbsp;&nbsp;
+                
               </div>
             </div>
           </nav>
@@ -120,6 +125,7 @@
                   <p class="text-muted small">
                     <%= timezone %>
                   </p>
+                  <a href="add_city/<%= place %>" class="btn btn-primary">Add to favourites</a>
                 </div>
 
                 <!-- You can find other data fetched by the app on the console in JSON form and display it as you please -->

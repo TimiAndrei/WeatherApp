@@ -176,3 +176,7 @@ p, h1, h2, h3, h4, h5{
   background-color: white;
   width: 100%;
 }
+
+#form_alerte, #main_city{
+  margin-left:25%;
+}

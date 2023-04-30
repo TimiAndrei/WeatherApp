@@ -1,4 +1,4 @@
-.alert {
+.alert-primary {
     width: 50%;
     display: block;
     margin-left: auto;
@@ -13,20 +13,31 @@
 }
 
 .oras_fav {
-    margin-left: 16%;
+    margin-left: 0%;
     min-width: 50%;
     font-size: 2em;
+    text-decoration: none;
 }
 
-.oras_fav:hover {
+.add_main{
+    text-decoration: none;
+    font-size: 3em;
+    margin-left: 5%;
+}
+.oras_fav:hover, .add_main:hover {
     color: rgb(232, 50, 131);
     transition: 0.5s;
+    text-decoration: none;
 }
 
 .temp {
-    margin-left: 20%;
+    margin-left: 0%;
     font-size: 2em;
 
+}
+
+.btn-close{
+    margin-left: 20%
 }
 
 img {
