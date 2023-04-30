@@ -187,7 +187,8 @@ app.get("/users/dashboard", checkNotAuthenticated, (req, res) => {
     var fav_city = [];
     let promises = [];
 
-
+    console.log("check");
+    console.log(req.body.alert);
     pool.query('Select UNNEST(favorite) from users where id = $1', [req.user.id], (err, result) => {
         if (err) {
             throw err;
@@ -196,6 +197,14 @@ app.get("/users/dashboard", checkNotAuthenticated, (req, res) => {
         }
     });
 
+    pool.query('Select alert from users where id = $1', [req.user.id], (err, result) => {
+        if (err) {
+            throw err;
+        } else {
+            if(result.rows[0] != null)
+                req.flash('alerts', 'alerts enabled!');
+        }
+    });
     function set_fav_city(value) {
         fav_city = value;
         console.log(fav_city.length);
