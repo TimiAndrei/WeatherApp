@@ -65,20 +65,18 @@
 
                     
                     <form action="/set_alerte">
-                        <fieldset class="form-group">
+                        <fieldset class="form-group" id="form_alerte">
                             <legend class="mt-4">Weather Alerts</legend>
                             <div class="form-check form-switch">
-                                <% if(alerts = true){%>
+                                <% if(alerts == 1){%>
                                 <input class="form-check-input" type="checkbox" id="alert" name="alert" onchange="this.form.submit()" checked>
-                                <p><%= alerts  %></p>
                                 <%  %>
                                 <% }else{ %>
                                 <input class="form-check-input" type="checkbox" id="alert" name="alert" onchange="this.form.submit()">  
-                                <p><%= alerts  %></p>  
                                 <% } %>
-                                <label class="form-check-label" for="alert">off/on</label>
                             </div>
                         </fieldset>
+                    </form>
 
                         <% if(orase_favorite.length){ for(var i=0; i< orase_favorite.length; i++) {%>
                             <div class="alert alert-dismissible alert-primary">

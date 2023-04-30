@@ -208,7 +208,7 @@ app.get("/users/dashboard", checkNotAuthenticated, (req, res) => {
 
     var fav_city = [];
     let promises = [];
-    var alerts = "unchecked";
+    var alerts = 0;
     
     pool.query('Select UNNEST(favorite) from users where id = $1', [req.user.id], (err, result) => {
         if (err) {
@@ -224,7 +224,7 @@ app.get("/users/dashboard", checkNotAuthenticated, (req, res) => {
         } else {
             
             if(result.rows[0].alert == true){
-                alerts = "checked";
+                alerts = 1;
             }
 
         }
