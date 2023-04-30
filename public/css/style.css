@@ -177,7 +177,6 @@ p, h1, h2, h3, h4, h5{
   width: 100%;
 }
 
-#form_alerte{
+#form_alerte, #main_city{
   margin-left:25%;
 }
-

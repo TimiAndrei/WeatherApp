@@ -15,38 +15,38 @@ const CronJob = require('cron').CronJob;
 const apiKey = `${process.env.API_KEY}`;
 const user = `${process.env.USER}`;
 const pass = `${process.env.PASS}`;
+const ipapi = require("ipapi.co");
+const client = 'timiandrei223@gmail.com'
 
-// const client = 'timiandrei223@gmail.com'
-
-// function get_client_alert_data() {
-//     return new Promise((resolve, reject) => {
-//         pool.query('select email, oras_default from users WHERE alert = true', (err, result) => {
-//             if (err) {
-//                 reject(err);
-//             } else {
-//                 resolve({
-//                     email: result.rows[0].email,
-//                     oras_default: result.rows[0].oras_default
-//                 });
-//             }
-//         });
-//     });
-// }
+function get_client_alert_data() {
+    return new Promise((resolve, reject) => {
+        pool.query('select email, oras_default from users WHERE alert = true', (err, result) => {
+            if (err) {
+                reject(err);
+            } else {
+                resolve({
+                    email: result.rows[0].email,
+                    oras_default: result.rows[0].oras_default
+                });
+            }
+        });
+    });
+}
 
 const cronJob = new CronJob('0 0 8 * * *', run);
 cronJob.start();
 
-// async function test() {
-//     try {
-//         const client_data = await get_client_alert_data();
-//         console.log(client_data);
-//         console.log(client_data.oras_default);
-//         console.log(client_data.email);
-//     } catch (error) {
-//         console.log('error', error);
-//     }
-// }
-// test();
+async function test() {
+    try {
+        const client_data = await get_client_alert_data();
+        console.log(client_data);
+        console.log(client_data.oras_default);
+        console.log(client_data.email);
+    } catch (error) {
+        console.log('error', error);
+    }
+}
+test();
 // ##########################################################################
 async function run() {
     try {
@@ -133,7 +133,7 @@ async function sendm(weather, client) {
 
 // sendm();
 
-var ipapi = require('ipapi.co');
+
 
 initializePassport(passport);
 require("dotenv").config();
@@ -179,6 +179,38 @@ app.get("/set_alerte", checkNotAuthenticated, (req, res) => {
     res.redirect("/users/dashboard");
 });
 
+app.get("/set_oras_default/:oras", checkNotAuthenticated, (req, res) => {
+
+    city = req.params.oras;
+    city = city.replace('ă', 'a');
+    city = city.replace('â', 'a');
+    city = city.replace('î', 'i');
+    city = city.replace('ș', 's');
+    city = city.replace('ş', 's');
+    city = city.replace('ț', 't');
+    city = city.replace('Ă', 'A');
+    city = city.replace('Â', 'A');
+    city = city.replace('Î', 'I');
+    city = city.replace('Ș', 'S');
+    city = city.replace('Ş', 'S');
+    city = city.replace('Ț', 'T');
+
+    console.log("Oras default");
+    console.log(req.params.oras);
+    pool.query('UPDATE users SET oras_default = $1 WHERE id = $2', [city, req.user.id], (err, result) => {
+        if(err){
+            req.flash('error', 'City could not be set as default');
+            res.redirect("/users/dashboard");
+        }
+        else
+        {
+            req.flash('success_msgw', 'City set as default');
+            res.redirect("/users/dashboard");
+        }
+    });
+
+});
+
 
 app.get("/", function (req, res) {
     // It will not fetch and display any data in the index page
@@ -209,7 +241,15 @@ app.get("/users/dashboard", checkNotAuthenticated, (req, res) => {
     var fav_city = [];
     let promises = [];
     var alerts = 0;
-    
+    var oras_default = "";
+
+    pool.query('Select oras_default from users where id = $1', [req.user.id], (err, result) => {
+        if (err) {
+            throw err;
+        } else {
+            oras_default = result.rows[0].oras_default;
+        }
+    });
     pool.query('Select UNNEST(favorite) from users where id = $1', [req.user.id], (err, result) => {
         if (err) {
             throw err;
@@ -262,7 +302,7 @@ app.get("/users/dashboard", checkNotAuthenticated, (req, res) => {
         Promise.all(promises)
             .then((results) => {
                 fav_city = results;
-                res.render("dashboard", { orase_favorite: fav_city, user: req.user.name, alerts: alerts });
+                res.render("dashboard", { orase_favorite: fav_city, user: req.user.name, alerts: alerts, oras_default: oras_default });
             })
             .catch((error) => {
                 console.log(error);
