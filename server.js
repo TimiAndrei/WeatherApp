@@ -158,6 +158,28 @@ app.set("view engine", "ejs");
 let lista_orase = fs.readFileSync('city_list.json').toString("utf-8");
 lista_orase = JSON.parse(lista_orase);
 
+app.get("/set_alerte", checkNotAuthenticated, (req, res) => {
+
+    console.log("ALERTA");
+    console.log(req.query.alert)
+    pool.query('SELECT alert FROM users WHERE id = $1', [req.user.id], (err, result) => {
+        console.log("alert");
+        console.log(result.rows[0].alert);
+        if(result.rows[0].alert == null || result.rows[0].alert == false){
+            console.log("Alerta true");
+            pool.query('UPDATE users SET alert = true WHERE id = $1', [req.user.id], (err, result) => {
+            });
+        }else{
+            console.log("Alerta false")
+            pool.query('UPDATE users SET alert = false WHERE id = $1', [req.user.id], (err, result) => {
+            });
+        }
+    });
+
+    res.redirect("/users/dashboard");
+});
+
+
 app.get("/", function (req, res) {
     // It will not fetch and display any data in the index page
     res.render("index", { weather: null, error: null, orase: lista_orase });
@@ -186,9 +208,8 @@ app.get("/users/dashboard", checkNotAuthenticated, (req, res) => {
 
     var fav_city = [];
     let promises = [];
-
-    console.log("check");
-    console.log(req.body.alert);
+    var alerts = "unchecked";
+    
     pool.query('Select UNNEST(favorite) from users where id = $1', [req.user.id], (err, result) => {
         if (err) {
             throw err;
@@ -201,10 +222,15 @@ app.get("/users/dashboard", checkNotAuthenticated, (req, res) => {
         if (err) {
             throw err;
         } else {
-            if(result.rows[0] != null)
-                req.flash('alerts', 'alerts enabled!');
+            
+            if(result.rows[0].alert == true){
+                alerts = "checked";
+            }
+
         }
     });
+    console.log("alerts");
+    console.log(alerts);
     function set_fav_city(value) {
         fav_city = value;
         console.log(fav_city.length);
@@ -236,7 +262,7 @@ app.get("/users/dashboard", checkNotAuthenticated, (req, res) => {
         Promise.all(promises)
             .then((results) => {
                 fav_city = results;
-                res.render("dashboard", { orase_favorite: fav_city, user: req.user.name });
+                res.render("dashboard", { orase_favorite: fav_city, user: req.user.name, alerts: alerts });
             })
             .catch((error) => {
                 console.log(error);
@@ -722,6 +748,8 @@ app.get("/users/dashboard/remove_city/:city", checkNotAuthenticated, (req, res) 
         }
     });
 });
+
+
 app.listen(5000, function () {
     console.log("Weather app listening on port 5000!");
 });
