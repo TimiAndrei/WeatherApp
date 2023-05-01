@@ -56,7 +56,7 @@ function getWeatherData(city) {
 };
 
 
-async function sendm(weather, client) {
+async function sendm(weather, client, special = 0) {
 
     let config = {
         service: 'gmail',
@@ -76,7 +76,25 @@ async function sendm(weather, client) {
         },
     });
     let response
-    if (weather.weather[0].id.toString().charAt(0) == '2') {
+    if (special == 1) {
+        response = {
+            body: {
+                name: 'Friend',
+                intro: 'Thank you for subscribing to our daily weather forecast!',
+                table: {
+                    data: [
+                        {
+                            City: `${weather.name}`,
+                            Temperature: `${Math.round(weather.main.temp)}°C`,
+                            Humidity: `${weather.main.humidity} % `,
+                        }
+                    ]
+                },
+                outro: 'We hope to inform you about the weather in your city every day! If you have any questions, please contact us !'
+            }
+        };
+    }
+    else if (weather.weather[0].id.toString().charAt(0) == '2') {
         response = {
             body: {
                 name: 'Friend',
@@ -90,7 +108,7 @@ async function sendm(weather, client) {
                         }
                     ]
                 },
-                outro: 'We hope you will have a great day even with this weather!'
+                outro: 'We hope you\'ll have a great day, no matter the weather!'
             }
         };
     }
@@ -108,7 +126,7 @@ async function sendm(weather, client) {
                         }
                     ]
                 },
-                outro: 'We hope you\'ll have a great day even with this weather!'
+                outro: 'We hope you\'ll have a great day, no matter the weather!'
             }
         };
     }
@@ -126,7 +144,7 @@ async function sendm(weather, client) {
                         }
                     ]
                 },
-                outro: 'We hope you\'ll have a great day even with this weather!'
+                outro: 'We hope you\'ll have a great day, no matter the weather!'
             }
         };
     }
@@ -144,7 +162,7 @@ async function sendm(weather, client) {
                         }
                     ]
                 },
-                outro: 'We hope you\'ll have a great day even with this weather!'
+                outro: 'We hope you\'ll have a great day, no matter the weather!'
             }
         };
     }
@@ -162,7 +180,7 @@ async function sendm(weather, client) {
                         }
                     ]
                 },
-                outro: 'We hope you\'ll have a great day even with this weather!'
+                outro: 'We hope you\'ll have a great day, no matter the weather!'
             }
         };
     }
@@ -170,7 +188,7 @@ async function sendm(weather, client) {
         response = {
             body: {
                 name: 'Friend',
-                intro: 'Enjoy this sunny day!',
+                intro: 'Today is gonna be a sunny day in town ! ',
                 table: {
                     data: [
                         {
@@ -261,16 +279,22 @@ app.get("/set_alerte", checkNotAuthenticated, (req, res) => {
         console.log(result.rows[0].alert);
         if (result.rows[0].alert == null || result.rows[0].alert == false) {
             console.log("Alerta true");
+            req.flash('success_msg', "You have subscribed to the daily alerts! We have sent you an email to confirm your subscription!");
+            let data = getWeatherData(req.user.oras_default);
+            Promise.resolve(data).then(function (value) {
+                sendm(value.current_weather, req.user.email, 1);
+            });
             pool.query('UPDATE users SET alert = true WHERE id = $1', [req.user.id], (err, result) => {
             });
+            res.redirect("/users/dashboard");
         } else {
             console.log("Alerta false")
+            req.flash('success_msg', "You have unsubscribed from the daily alerts!");
             pool.query('UPDATE users SET alert = false WHERE id = $1', [req.user.id], (err, result) => {
             });
+            res.redirect("/users/dashboard");
         }
     });
-
-    res.redirect("/users/dashboard");
 });
 
 app.get("/set_oras_default/:oras", checkNotAuthenticated, (req, res) => {
