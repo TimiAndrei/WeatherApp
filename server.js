@@ -16,48 +16,33 @@ const apiKey = `${process.env.API_KEY}`;
 const user = `${process.env.USER}`;
 const pass = `${process.env.PASS}`;
 var ipapi = require('ipapi.co');
-const client = 'timiandrei223@gmail.com'
 
-// function get_client_alert_data() {
-//     return new Promise((resolve, reject) => {
-//         pool.query('select email, oras_default from users WHERE alert = true', (err, result) => {
-//             if (err) {
-//                 reject(err);
-//             } else {
-//                 resolve({
-//                     email: result.rows[0].email,
-//                     oras_default: result.rows[0].oras_default
-//                 });
-//             }
-//         });
-//     });
-// }
+function get_client_alert_data() {
+    return new Promise((resolve, reject) => {
+        pool.query('select email, oras_default from users WHERE alert = true', (err, result) => {
+            if (err) {
+                reject(err);
+            } else {
+                resolve(result.rows);
+            }
+        });
+    });
+}
 
-// const cronJob = new CronJob('0 0 8 * * *', run);
-// cronJob.start();
+const cronJob = new CronJob('0 0 8 * * *', run);
+cronJob.start();
 
-// async function test() {
-//     try {
-//         const client_data = await get_client_alert_data();
-//         console.log(client_data);
-//         console.log(client_data.oras_default);
-//         console.log(client_data.email);
-//     } catch (error) {
-//         console.log('error', error);
-//     }
-// }
-// test();
-// // ##########################################################################
-// async function run() {
-//     try {
-
-//         const weatherData = await getWeatherData('Bucharest');
-//         await sendm(weatherData.current_weather, client);
-
-//     } catch (error) {
-//         console.log('error', error);
-//     }
-// }
+async function run() {
+    try {
+        const client_data = await get_client_alert_data();
+        for (let i = 0; i < client_data.length; i++) {
+            const weatherData = await getWeatherData(client_data[i].oras_default);
+            await sendm(weatherData.current_weather, client_data[i].email);
+        }
+    } catch (error) {
+        console.log('error', error);
+    }
+}
 
 function getWeatherData(city) {
     return axios.get(`http://api.openweathermap.org/data/2.5/weather?q=${city}&units=metric&appid=${apiKey}`).then(result_curr => {
@@ -70,13 +55,9 @@ function getWeatherData(city) {
 
 };
 
-getWeatherData('Bucharest');
-// we'll pass the client to the sendm function
-// si ulterior o sa fie iterata intr-un for pentru a trimite mailuri la toti userii din baza de date
-
 
 async function sendm(weather, client) {
-    console.log(weather);
+
     let config = {
         service: 'gmail',
         auth: {
@@ -94,41 +75,154 @@ async function sendm(weather, client) {
             link: 'http://localhost:5000'
         },
     });
+    let response
+    if (weather.weather[0].id.toString().charAt(0) == '2') {
+        response = {
+            body: {
+                name: 'Friend',
+                intro: 'Take care, there is a thunderstorm in your city!',
+                table: {
+                    data: [
+                        {
+                            City: `${weather.name}`,
+                            Temperature: `${Math.round(weather.main.temp)}°C`,
+                            Humidity: `${weather.main.humidity} % `,
+                        }
+                    ]
+                },
+                outro: 'We hope you will have a great day even with this weather!'
+            }
+        };
+    }
+    else if (weather.weather[0].id.toString().charAt(0) == '3') {
+        response = {
+            body: {
+                name: 'Friend',
+                intro: 'Today there is a drizzle in your city!',
+                table: {
+                    data: [
+                        {
+                            City: `${weather.name}`,
+                            Temperature: `${Math.round(weather.main.temp)}°C`,
+                            Humidity: `${weather.main.humidity} % `,
+                        }
+                    ]
+                },
+                outro: 'We hope you\'ll have a great day even with this weather!'
+            }
+        };
+    }
+    else if (weather.weather[0].id.toString().charAt(0) == '5') {
+        response = {
+            body: {
+                name: 'Friend',
+                intro: 'Make sure to bring an umbrella with you, today is raining !',
+                table: {
+                    data: [
+                        {
+                            City: `${weather.name}`,
+                            Temperature: `${Math.round(weather.main.temp)}°C`,
+                            Humidity: `${weather.main.humidity} % `,
+                        }
+                    ]
+                },
+                outro: 'We hope you\'ll have a great day even with this weather!'
+            }
+        };
+    }
+    else if (weather.weather[0].id.toString().charAt(0) == '6') {
+        response = {
+            body: {
+                name: 'Friend',
+                intro: 'Make sure to bring a coat with you, today is snowing !',
+                table: {
+                    data: [
+                        {
+                            City: `${weather.name}`,
+                            Temperature: `${Math.round(weather.main.temp)}°C`,
+                            Humidity: `${weather.main.humidity} % `,
+                        }
+                    ]
+                },
+                outro: 'We hope you\'ll have a great day even with this weather!'
+            }
+        };
+    }
+    else if (weather.weather[0].id.toString().charAt(0) == '7') {
+        response = {
+            body: {
+                name: 'Friend',
+                intro: 'Today is foggy in your city!',
+                table: {
+                    data: [
+                        {
+                            City: `${weather.name}`,
+                            Temperature: `${Math.round(weather.main.temp)}°C`,
+                            Humidity: `${weather.main.humidity} % `,
+                        }
+                    ]
+                },
+                outro: 'We hope you\'ll have a great day even with this weather!'
+            }
+        };
+    }
+    else if (weather.weather[0].id.toString().charAt(0) == '8') {
+        response = {
+            body: {
+                name: 'Friend',
+                intro: 'Enjoy this sunny day!',
+                table: {
+                    data: [
+                        {
+                            City: `${weather.name}`,
+                            Temperature: `${Math.round(weather.main.temp)}°C`,
+                            Humidity: `${weather.main.humidity} % `,
+                        }
+                    ]
+                },
+                outro: 'We hope you\'ll have a great sunny day!'
+            }
+        };
+    }
+    else {
+        response = {
+            body: {
+                name: 'Friend',
+                intro: 'Here is the weather for today!',
+                table: {
+                    data: [
+                        {
+                            City: `${weather.name}`,
+                            Temperature: `${Math.round(weather.main.temp)}°C`,
+                            Humidity: `${weather.main.humidity} % `,
+                        }
+                    ]
+                },
+                outro: 'We hope you\'ll have a great day, no matter the weather!'
+            }
+        };
+    }
 
-    let response = {
-        body: {
-            name: 'Friend',
-            intro: 'Be sure to take an umbrella with you today, it\'s going to rain!',
-            table: {
-                data: [
-                    {
-                        City: `${weather.name}`,
-                        Temperature: `${Math.round(weather.main.temp)}°C`,
-                        Humidity: `${weather.main.humidity} % `,
-                    }
-                ]
-            },
-            outro: 'Need help, or have questions? Just reply to this email, we\'d love to help.'
-        }
-    };
+
+
 
     let mail = mailgenerator.generate(response);
 
     let message = {
         from: `WeatherApp user`,
         to: client,
-        subject: 'Welcome to Weather App!',
+        subject: 'Weather App alert!',
         html: mail
     };
 
-    if (weather.weather[0].id.toString().charAt(0) == '8') {
-        await transporter.sendMail(message).then(() => {
-            console.log('mail sent succesfully');
-        }).catch(error => {
-            console.log('error occured');
-            console.log(error.message);
-        });
-    }
+
+    await transporter.sendMail(message).then(() => {
+        console.log('mail sent succesfully');
+    }).catch(error => {
+        console.log('error occured');
+        console.log(error.message);
+    });
+
 }
 
 // sendm();
@@ -165,11 +259,11 @@ app.get("/set_alerte", checkNotAuthenticated, (req, res) => {
     pool.query('SELECT alert FROM users WHERE id = $1', [req.user.id], (err, result) => {
         console.log("alert");
         console.log(result.rows[0].alert);
-        if(result.rows[0].alert == null || result.rows[0].alert == false){
+        if (result.rows[0].alert == null || result.rows[0].alert == false) {
             console.log("Alerta true");
             pool.query('UPDATE users SET alert = true WHERE id = $1', [req.user.id], (err, result) => {
             });
-        }else{
+        } else {
             console.log("Alerta false")
             pool.query('UPDATE users SET alert = false WHERE id = $1', [req.user.id], (err, result) => {
             });
@@ -198,12 +292,11 @@ app.get("/set_oras_default/:oras", checkNotAuthenticated, (req, res) => {
     console.log("Oras default");
     console.log(req.params.oras);
     pool.query('UPDATE users SET oras_default = $1 WHERE id = $2', [city, req.user.id], (err, result) => {
-        if(err){
+        if (err) {
             req.flash('error', 'City could not be set as default');
             res.redirect("/users/dashboard");
         }
-        else
-        {
+        else {
             req.flash('success_msgw', 'City set as default');
             res.redirect("/users/dashboard");
         }
@@ -343,22 +436,17 @@ app.get("/users/dashboard", checkNotAuthenticated, (req, res) => {
         if (err) {
             throw err;
         } else {
-            
-            if(result.rows[0].alert == true){
+
+            if (result.rows[0].alert == true) {
                 alerts = 1;
             }
 
         }
     });
-    console.log("alerts");
-    console.log(alerts);
     function set_fav_city(value) {
         fav_city = value;
-        console.log(fav_city.length);
-        console.log(fav_city);
 
         for (let i = 0; i < fav_city.length; i++) {
-            console.log(fav_city[i].unnest);
             let url = `http://api.openweathermap.org/data/2.5/weather?q=${fav_city[i].unnest}&units=metric&appid=${apiKey}`;
             // we use promises to ensure that all requests are completed before we render the page
             let promise = new Promise((resolve, reject) => {
@@ -367,7 +455,6 @@ app.get("/users/dashboard", checkNotAuthenticated, (req, res) => {
                         reject(err);
                     } else {
                         let weather = JSON.parse(body);
-                        console.log(weather);
                         let oras = new oras_favorit(
                             weather.name,
                             weather.main.temp,
