@@ -15,49 +15,49 @@ const CronJob = require('cron').CronJob;
 const apiKey = `${process.env.API_KEY}`;
 const user = `${process.env.USER}`;
 const pass = `${process.env.PASS}`;
-const ipapi = require("ipapi.co");
+var ipapi = require('ipapi.co');
 const client = 'timiandrei223@gmail.com'
 
-function get_client_alert_data() {
-    return new Promise((resolve, reject) => {
-        pool.query('select email, oras_default from users WHERE alert = true', (err, result) => {
-            if (err) {
-                reject(err);
-            } else {
-                resolve({
-                    email: result.rows[0].email,
-                    oras_default: result.rows[0].oras_default
-                });
-            }
-        });
-    });
-}
+// function get_client_alert_data() {
+//     return new Promise((resolve, reject) => {
+//         pool.query('select email, oras_default from users WHERE alert = true', (err, result) => {
+//             if (err) {
+//                 reject(err);
+//             } else {
+//                 resolve({
+//                     email: result.rows[0].email,
+//                     oras_default: result.rows[0].oras_default
+//                 });
+//             }
+//         });
+//     });
+// }
 
-const cronJob = new CronJob('0 0 8 * * *', run);
-cronJob.start();
+// const cronJob = new CronJob('0 0 8 * * *', run);
+// cronJob.start();
 
-async function test() {
-    try {
-        const client_data = await get_client_alert_data();
-        console.log(client_data);
-        console.log(client_data.oras_default);
-        console.log(client_data.email);
-    } catch (error) {
-        console.log('error', error);
-    }
-}
-test();
-// ##########################################################################
-async function run() {
-    try {
+// async function test() {
+//     try {
+//         const client_data = await get_client_alert_data();
+//         console.log(client_data);
+//         console.log(client_data.oras_default);
+//         console.log(client_data.email);
+//     } catch (error) {
+//         console.log('error', error);
+//     }
+// }
+// test();
+// // ##########################################################################
+// async function run() {
+//     try {
 
-        const weatherData = await getWeatherData('Bucharest');
-        await sendm(weatherData.current_weather, client);
+//         const weatherData = await getWeatherData('Bucharest');
+//         await sendm(weatherData.current_weather, client);
 
-    } catch (error) {
-        console.log('error', error);
-    }
-}
+//     } catch (error) {
+//         console.log('error', error);
+//     }
+// }
 
 function getWeatherData(city) {
     return axios.get(`http://api.openweathermap.org/data/2.5/weather?q=${city}&units=metric&appid=${apiKey}`).then(result_curr => {
@@ -208,6 +208,87 @@ app.get("/set_oras_default/:oras", checkNotAuthenticated, (req, res) => {
             res.redirect("/users/dashboard");
         }
     });
+
+});
+
+var city_auto = '';
+
+var callback = function (res) {
+    city_auto = res.city;
+    console.log(city_auto);
+};
+
+app.get("/locatie_automata", function (req, res) {
+
+    // let ip = req.ip; daca aplicatia ar fi pe net
+    // let ip = '188.24.29.24'; Cluj
+    // Bucuresti
+    let ip = '45.250.65.105';
+    console.log(ip);
+    // Get city name passed in the form
+    ipapi.location(callback, ip);
+    let city = city_auto;
+    console.log(city);
+    console.log("da");
+    // Use that city name to fetch data
+    // Use the API_KEY in the '.env' file
+    let url = `http://api.openweathermap.org/data/2.5/weather?q=${city}&units=metric&appid=${apiKey}`;
+
+    request(url, function (err, response, body) {
+
+        // On return, check the json data fetched
+        if (err) {
+            res.render('index', { weather: null, error: 'Error, please try again', orase: lista_orase });
+        } else {
+            let weather = JSON.parse(body);
+
+
+            if (weather.main == undefined) {
+                res.render('index', { weather: null, error: 'Error, please try again', orase: lista_orase });
+            } else {
+                // we shall use the data got to set up your output
+                let place = `${weather.name}, ${weather.sys.country}`,
+                    /* you shall calculate the current timezone using the data fetched*/
+                    weatherTimezone = `${new Date(
+                        weather.dt * 1000 - weather.timezone * 1000
+                    )}`;
+                let weatherTemp = `${weather.main.temp}`,
+                    weatherPressure = `${weather.main.pressure}`,
+                    /* you will fetch the weather icon and its size using the icon data*/
+                    weatherIcon = `http://openweathermap.org/img/wn/${weather.weather[0].icon}@2x.png`,
+                    weatherDescription = `${weather.weather[0].description}`,
+                    humidity = `${weather.main.humidity}`,
+                    clouds = `${weather.clouds.all}`,
+                    visibility = `${weather.visibility}`,
+                    main = `${weather.weather[0].main}`,
+                    weatherFahrenheit;
+                weatherFahrenheit = (weatherTemp * 9) / 5 + 32;
+
+                // you shall also round off the value of the degrees fahrenheit calculated into two decimal places
+                function roundToTwo(num) {
+                    return +(Math.round(num + "e+2") + "e-2");
+                }
+                weatherFahrenheit = roundToTwo(weatherFahrenheit);
+
+                res.render("index", {
+                    weather: weather,
+                    place: place,
+                    temp: weatherTemp,
+                    pressure: weatherPressure,
+                    icon: weatherIcon,
+                    description: weatherDescription,
+                    timezone: weatherTimezone,
+                    humidity: humidity,
+                    fahrenheit: weatherFahrenheit,
+                    clouds: clouds,
+                    visibility: visibility,
+                    main: main,
+                    error: null,
+                    orase: lista_orase
+                });
+            }
+        }
+    })
 
 });
 
@@ -586,87 +667,6 @@ app.get("/:oras", function (req, res) {
             }
         }
     })
-});
-
-var city_auto = '';
-
-var callback = function (res) {
-    city_auto = res.city;
-    console.log(city_auto);
-};
-
-app.get("/locatie_automata", function (req, res) {
-
-    // let ip = req.ip; daca aplicatia ar fi pe net
-    // let ip = '188.24.29.24'; Cluj
-    // Bucuresti
-    let ip = '45.250.65.105';
-    console.log(ip);
-    // Get city name passed in the form
-    ipapi.location(callback, ip);
-    let city = city_auto;
-    console.log(city);
-    console.log("da");
-    // Use that city name to fetch data
-    // Use the API_KEY in the '.env' file
-    let url = `http://api.openweathermap.org/data/2.5/weather?q=${city}&units=metric&appid=${apiKey}`;
-
-    request(url, function (err, response, body) {
-
-        // On return, check the json data fetched
-        if (err) {
-            res.render('index', { weather: null, error: 'Error, please try again', orase: lista_orase });
-        } else {
-            let weather = JSON.parse(body);
-
-
-            if (weather.main == undefined) {
-                res.render('index', { weather: null, error: 'Error, please try again', orase: lista_orase });
-            } else {
-                // we shall use the data got to set up your output
-                let place = `${weather.name}, ${weather.sys.country}`,
-                    /* you shall calculate the current timezone using the data fetched*/
-                    weatherTimezone = `${new Date(
-                        weather.dt * 1000 - weather.timezone * 1000
-                    )}`;
-                let weatherTemp = `${weather.main.temp}`,
-                    weatherPressure = `${weather.main.pressure}`,
-                    /* you will fetch the weather icon and its size using the icon data*/
-                    weatherIcon = `http://openweathermap.org/img/wn/${weather.weather[0].icon}@2x.png`,
-                    weatherDescription = `${weather.weather[0].description}`,
-                    humidity = `${weather.main.humidity}`,
-                    clouds = `${weather.clouds.all}`,
-                    visibility = `${weather.visibility}`,
-                    main = `${weather.weather[0].main}`,
-                    weatherFahrenheit;
-                weatherFahrenheit = (weatherTemp * 9) / 5 + 32;
-
-                // you shall also round off the value of the degrees fahrenheit calculated into two decimal places
-                function roundToTwo(num) {
-                    return +(Math.round(num + "e+2") + "e-2");
-                }
-                weatherFahrenheit = roundToTwo(weatherFahrenheit);
-
-                res.render("index", {
-                    weather: weather,
-                    place: place,
-                    temp: weatherTemp,
-                    pressure: weatherPressure,
-                    icon: weatherIcon,
-                    description: weatherDescription,
-                    timezone: weatherTimezone,
-                    humidity: humidity,
-                    fahrenheit: weatherFahrenheit,
-                    clouds: clouds,
-                    visibility: visibility,
-                    main: main,
-                    error: null,
-                    orase: lista_orase
-                });
-            }
-        }
-    })
-
 });
 
 app.post("/users/login", passport.authenticate('local', {
