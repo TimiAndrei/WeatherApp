@@ -1,92 +1,98 @@
 body {
-    width: auto;
-    margin: 0 auto;
-    font-family: "Open Sans", sans-serif;
-  }
-  
-  /* This will format the whole fieldset content*/
-  
-  .container {
-    width: 80%;
-    margin: 0 auto;
-  }
-  
-  /* This will format the whole fieldset content*/
-  
-  fieldset {
-    display: block;
-    -webkit-margin-start: 0px;
-    -webkit-margin-end: 0px;
-    -webkit-padding-before: 0em;
-    -webkit-padding-start: 0em;
-    -webkit-padding-end: 0em;
-    -webkit-padding-after: 0em;
-    border: 0px;
-    border-image-source: initial;
-    border-image-slice: initial;
-    border-image-width: initial;
-    border-image-outset: initial;
-    border-image-repeat: initial;
-    min-width: -webkit-min-content;
-    padding: 30px;
-  }
-  
-  /* Format the input section */
-  
-  /* Format the input, paragraph, hover effect, focus and button */
-  .ghost-input,
-  p {
-    display: block;
-    font-weight: 300;
-    width: 100%;
-    font-size: 25px;
-    border: 0px;
-    outline: none;
-    width: 100%;
-    -webkit-box-sizing: border-box;
-    -moz-box-sizing: border-box;
-    box-sizing: border-box;
-    color: #4b545f;
-    font-family: Open Sans, Verdana;
-    padding: 10px 15px;
-    margin: 30px 0px;
-    -webkit-transition: all 0.1s ease-in-out;
-    -moz-transition: all 0.1s ease-in-out;
-    -ms-transition: all 0.1s ease-in-out;
-    -o-transition: all 0.1s ease-in-out;
-    transition: all 0.1s ease-in-out;
-  }
-  
-  .ghost-input:focus {
-    border-bottom: 1px solid #ddd;
-  }
-  
-  .ghost-button {
-    background-color: transparent;
-    border: 2px solid #ddd;
-    padding: 10px 30px;
-    width: 100%;
-    min-width: 350px;
-    -webkit-transition: all 0.1s ease-in-out;
-    -moz-transition: all 0.1s ease-in-out;
-    -ms-transition: all 0.1s ease-in-out;
-    -o-transition: all 0.1s ease-in-out;
-    transition: all 0.1s ease-in-out;
-  }
-  
-  .ghost-button:hover {
-    border: 2px solid #515151;
-  }
-  
-p, h1, h2, h3, h4, h5{
+  width: auto;
+  margin: 0 auto;
+  font-family: "Open Sans", sans-serif;
+}
+
+/* This will format the whole fieldset content*/
+
+.container {
+  width: 80%;
+  margin: 0 auto;
+}
+
+/* This will format the whole fieldset content*/
+
+fieldset {
+  display: block;
+  -webkit-margin-start: 0px;
+  -webkit-margin-end: 0px;
+  -webkit-padding-before: 0em;
+  -webkit-padding-start: 0em;
+  -webkit-padding-end: 0em;
+  -webkit-padding-after: 0em;
+  border: 0px;
+  border-image-source: initial;
+  border-image-slice: initial;
+  border-image-width: initial;
+  border-image-outset: initial;
+  border-image-repeat: initial;
+  min-width: -webkit-min-content;
+  padding: 30px;
+}
+
+/* Format the input section */
+
+/* Format the input, paragraph, hover effect, focus and button */
+.ghost-input,
+p {
+  display: block;
+  font-weight: 300;
+  width: 100%;
+  font-size: 25px;
+  border: 0px;
+  outline: none;
+  width: 100%;
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
+  color: #4b545f;
+  font-family: Open Sans, Verdana;
+  padding: 10px 15px;
+  margin: 30px 0px;
+  -webkit-transition: all 0.1s ease-in-out;
+  -moz-transition: all 0.1s ease-in-out;
+  -ms-transition: all 0.1s ease-in-out;
+  -o-transition: all 0.1s ease-in-out;
+  transition: all 0.1s ease-in-out;
+}
+
+.ghost-input:focus {
+  border-bottom: 1px solid #ddd;
+}
+
+.ghost-button {
+  background-color: transparent;
+  border: 2px solid #ddd;
+  padding: 10px 30px;
+  width: 100%;
+  min-width: 350px;
+  -webkit-transition: all 0.1s ease-in-out;
+  -moz-transition: all 0.1s ease-in-out;
+  -ms-transition: all 0.1s ease-in-out;
+  -o-transition: all 0.1s ease-in-out;
+  transition: all 0.1s ease-in-out;
+}
+
+.ghost-button:hover {
+  border: 2px solid #515151;
+}
+
+p,
+h1,
+h2,
+h3,
+h4,
+h5 {
   color: white;
 }
 
-#nume_oras{
+#nume_oras {
   margin-top: 1em;
   background-color: transparent;
 }
-#btn-loc{
+
+#btn-loc {
   display: block;
   width: 30%;
   margin-left: auto;
@@ -108,10 +114,11 @@ p, h1, h2, h3, h4, h5{
   cursor: pointer;
 }
 
-#dropdown_menu{
+#dropdown_menu {
   max-height: 500px;
   overflow-y: scroll;
 }
+
 /* Dropdown button on hover & focus */
 
 
@@ -128,9 +135,9 @@ p, h1, h2, h3, h4, h5{
 .dropdown-content {
   display: none;
   position: absolute;
-  background-color: #f6f6f6;
-  min-width: 25vw;
-  border: 1px solid #ddd;
+  /* background-color: #f6f6f6; */
+  min-width: 100%;
+  /* border: 1px solid #ddd; */
   z-index: 1;
 }
 
@@ -144,39 +151,64 @@ p, h1, h2, h3, h4, h5{
 }
 
 /* Change color of dropdown links on hover */
-.dropdown-content a:hover {background-color: red; color: white;}
+.dropdown-content a:hover {
+  background-color: var(--bs-btn-hover-border-color);
+  color: white;
+}
 
 /* Show the dropdown menu (use JS to add this class to the .dropdown-content container when the user clicks on the dropdown button) */
-.show {display:block;}
+.show {
+  display: block;
+}
 
-#grid-weather{
+#grid-weather {
   grid-template-columns: repeat(3, 1fr);
 }
 
-#grid-weather > div{
+#grid-weather>div {
   display: block;
   margin-left: auto;
   margin-right: auto;
   margin: 0;
 }
 
-#get_city{
+#get_city {
   margin-top: 1em;
   margin-bottom: 1em;
 }
 
-#submit_city{
-  width:30%;
+#submit_city {
+  width: 30%;
   display: block;
   margin-left: auto;
   margin-right: auto;
 }
 
-#city_input{
+/* #city_input {
   background-color: white;
   width: 100%;
+} */
+
+#form_alerte,
+#main_city {
+  margin-left: 25%;
 }
 
-#form_alerte, #main_city{
-  margin-left:25%;
+.search {
+  height: 4em;
+  outline: red;
+}
+
+::-webkit-scrollbar {
+  width: 0px;
+  background: transparent;
+}
+
+::-webkit-input-placeholder {
+  text-align: center;
+}
+
+#search_special {
+  /* background: var(--bs-btn-hover-border-color); */
+  background: var(--bs-gray-700);
 }

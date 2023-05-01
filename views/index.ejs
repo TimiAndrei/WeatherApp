@@ -42,7 +42,6 @@
     function select_city() {
       document.getElementById("dropdown_menu").classList.toggle("show");
     }
-
     function match_city() {
       var input, city_to_find, ul, li, a, i;
       input = document.getElementById("city_input");
@@ -88,7 +87,7 @@
                 &nbsp;&nbsp;
                 <a href="/users/login" class="btn btn-secondary">Login</a>
                 &nbsp;&nbsp;
-                
+
               </div>
             </div>
           </nav>
@@ -98,39 +97,44 @@
             <fieldset>
               <!-- This form shall be used to fetch your city name -->
               <form action="/" method="post">
-                <input name="city" type="text" class="form-control" placeholder="Enter a city" required id="get_city">
+                <input name="city" type="text" class="form-control" placeholder="Enter a city" required id="btn-loc"
+                  autocomplete="off" style="height:3rem;">
                 <input type="submit" class="btn btn-outline-light" value="Get Weather" id="submit_city">
+
               </form>
 
               <a href="/locatie_automata" class="btn btn-primary" id="btn-loc">Automatic Location</a>
               <div class="dropdown">
                 <button onclick="select_city()" class="dropbtn btn btn-success">Choose City</button>
                 <div id="dropdown_menu" class="dropdown-content">
-                  <input type="text" placeholder="Search.." id="city_input" onkeyup="match_city()">
+                  <div id="search_special">
+                    <input type="text" class="form-control" placeholder="Search.." id="city_input"
+                      onkeyup="match_city()">
+                  </div>
                   <% if(orase.length){ for(var i=0; i< orase.length; i++) {%>
-                    <a href="/<%= orase[i].nume%>">
-                      <%= orase[i].nume%>
-                    </a>
+                    <div class="card">
+                      <a class="btn btn-outline-primary" href=" /<%=orase[i].nume%>">
+                        <%= orase[i].nume%>
+                      </a>
+                    </div>
                     <% } } %>
                 </div>
               </div>
 
 
-              <!-- Upon fetching of data you will display it -->
               <%if( weather !==null){ %>
                 <div class="alert alert-dismissible alert-primary" id="nume_oras">
-                  <p>
+                  <h3>
                     <%= place %>
-                  </p>
+                  </h3>
                   <p class="text-muted small">
                     <%= timezone %>
                   </p>
                   <a href="add_city/<%= place %>" class="btn btn-primary">Add to favourites</a>
                 </div>
-
                 <!-- You can find other data fetched by the app on the console in JSON form and display it as you please -->
-                <div class="card-deck">
-                  <div class="card border-info mb-3" style="max-width: 18rem;">
+                <div class="card-deck center" style="display:flexbox; padding-left:3%;">
+                  <div class="card border-info mb-3" style="max-width: 30%; ">
                     <div class="card-header">Summary</div>
                     <div class="card-body text-dark">
                       <img src="<%= icon %>" alt="Weather-Icon">
@@ -146,8 +150,7 @@
                       </p>
                     </div>
                   </div>
-
-                  <div class="card border-info mb-3" style="max-width: 18rem;">
+                  <div class="card border-info mb-3" style="max-width: 30%;">
                     <div class="card-header">Description</div>
                     <div class="card-body text-dark">
                       <h5 class="card-title">Overall Description: </h5>
@@ -164,8 +167,7 @@
                       </p>
                     </div>
                   </div>
-
-                  <div class="card border-info mb-3" style="max-width: 18rem;">
+                  <div class="card border-info mb-3" style="max-width: 30%;">
                     <div class="card-header">Other info</div>
                     <div class="card-body text-dark">
                       <h5 class="card-title">Humidity: </h5>
