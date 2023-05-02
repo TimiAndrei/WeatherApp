@@ -58,6 +58,11 @@ function initialize(passport) {
             if (err) {
                 return done(err);
             }
+            if (results.rows.length === 0) {
+                // user not found, return null or an error object
+                console.log("User deleted")
+                return done(null, null);
+            }
             console.log(`ID is ${results.rows[0].id}`);
             return done(null, results.rows[0]);
         });

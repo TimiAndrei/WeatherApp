@@ -76,7 +76,7 @@ async function sendm(weather, client, special = 0) {
         },
     });
     let response
-    if (special == 1) {
+    if (special == 1 && weather != null) {
         response = {
             body: {
                 name: `${client.name}`,
@@ -94,131 +94,145 @@ async function sendm(weather, client, special = 0) {
             }
         };
     }
-    else if (weather.weather[0].id.toString().charAt(0) == '2') {
+    else if (special == 1 && weather == null) {
         response = {
             body: {
                 name: `${client.name}`,
-                intro: 'Take care, there is a thunderstorm in your city!',
-                table: {
-                    data: [
-                        {
-                            City: `${weather.name}`,
-                            Temperature: `${Math.round(weather.main.temp)}°C`,
-                            Humidity: `${weather.main.humidity} % `,
-                        }
-                    ]
-                },
+                intro: 'Thank you for subscribing to our daily weather forecast! Please make sure to set your default city in your profile to get weather information!',
+
                 outro: 'We hope you\'ll have a great day, no matter the weather!'
             }
         };
     }
-    else if (weather.weather[0].id.toString().charAt(0) == '3') {
-        response = {
-            body: {
-                name: `${client.name}`,
-                intro: 'Today there is a drizzle in your city!',
-                table: {
-                    data: [
-                        {
-                            City: `${weather.name}`,
-                            Temperature: `${Math.round(weather.main.temp)}°C`,
-                            Humidity: `${weather.main.humidity} % `,
-                        }
-                    ]
-                },
-                outro: 'We hope you\'ll have a great day, no matter the weather!'
-            }
-        };
-    }
-    else if (weather.weather[0].id.toString().charAt(0) == '5') {
-        response = {
-            body: {
-                name: `${client.name}`,
-                intro: 'Make sure to bring an umbrella with you, today is raining !',
-                table: {
-                    data: [
-                        {
-                            City: `${weather.name}`,
-                            Temperature: `${Math.round(weather.main.temp)}°C`,
-                            Humidity: `${weather.main.humidity} % `,
-                        }
-                    ]
-                },
-                outro: 'We hope you\'ll have a great day, no matter the weather!'
-            }
-        };
-    }
-    else if (weather.weather[0].id.toString().charAt(0) == '6') {
-        response = {
-            body: {
-                name: `${client.name}`,
-                intro: 'Make sure to bring a coat with you, today is snowing !',
-                table: {
-                    data: [
-                        {
-                            City: `${weather.name}`,
-                            Temperature: `${Math.round(weather.main.temp)}°C`,
-                            Humidity: `${weather.main.humidity} % `,
-                        }
-                    ]
-                },
-                outro: 'We hope you\'ll have a great day, no matter the weather!'
-            }
-        };
-    }
-    else if (weather.weather[0].id.toString().charAt(0) == '7') {
-        response = {
-            body: {
-                name: `${client.name}`,
-                intro: 'Today is foggy in your city!',
-                table: {
-                    data: [
-                        {
-                            City: `${weather.name}`,
-                            Temperature: `${Math.round(weather.main.temp)}°C`,
-                            Humidity: `${weather.main.humidity} % `,
-                        }
-                    ]
-                },
-                outro: 'We hope you\'ll have a great day, no matter the weather!'
-            }
-        };
-    }
-    else if (weather.weather[0].id.toString().charAt(0) == '8') {
-        response = {
-            body: {
-                name: `${client.name}`,
-                intro: 'Today is gonna be a sunny day in town ! ',
-                table: {
-                    data: [
-                        {
-                            City: `${weather.name}`,
-                            Temperature: `${Math.round(weather.main.temp)}°C`,
-                            Humidity: `${weather.main.humidity} % `,
-                        }
-                    ]
-                },
-                outro: 'We hope you\'ll have a great sunny day!'
-            }
-        };
-    }
-    else {
-        response = {
-            body: {
-                name: `${client.name}`,
-                intro: 'Here is the weather for today!',
-                table: {
-                    data: [
-                        {
-                            City: `${weather.name}`,
-                            Temperature: `${Math.round(weather.main.temp)}°C`,
-                            Humidity: `${weather.main.humidity} % `,
-                        }
-                    ]
-                },
-                outro: 'We hope you\'ll have a great day, no matter the weather!'
-            }
-        };
+    else if (weather != null) {
+
+
+        if (weather.weather[0].id.toString().charAt(0) == '2') {
+            response = {
+                body: {
+                    name: `${client.name}`,
+                    intro: 'Take care, there is a thunderstorm in your city!',
+                    table: {
+                        data: [
+                            {
+                                City: `${weather.name}`,
+                                Temperature: `${Math.round(weather.main.temp)}°C`,
+                                Humidity: `${weather.main.humidity} % `,
+                            }
+                        ]
+                    },
+                    outro: 'We hope you\'ll have a great day, no matter the weather!'
+                }
+            };
+        }
+        else if (weather.weather[0].id.toString().charAt(0) == '3') {
+            response = {
+                body: {
+                    name: `${client.name}`,
+                    intro: 'Today there is a drizzle in your city!',
+                    table: {
+                        data: [
+                            {
+                                City: `${weather.name}`,
+                                Temperature: `${Math.round(weather.main.temp)}°C`,
+                                Humidity: `${weather.main.humidity} % `,
+                            }
+                        ]
+                    },
+                    outro: 'We hope you\'ll have a great day, no matter the weather!'
+                }
+            };
+        }
+        else if (weather.weather[0].id.toString().charAt(0) == '5') {
+            response = {
+                body: {
+                    name: `${client.name}`,
+                    intro: 'Make sure to bring an umbrella with you, today is raining !',
+                    table: {
+                        data: [
+                            {
+                                City: `${weather.name}`,
+                                Temperature: `${Math.round(weather.main.temp)}°C`,
+                                Humidity: `${weather.main.humidity} % `,
+                            }
+                        ]
+                    },
+                    outro: 'We hope you\'ll have a great day, no matter the weather!'
+                }
+            };
+        }
+        else if (weather.weather[0].id.toString().charAt(0) == '6') {
+            response = {
+                body: {
+                    name: `${client.name}`,
+                    intro: 'Make sure to bring a coat with you, today is snowing !',
+                    table: {
+                        data: [
+                            {
+                                City: `${weather.name}`,
+                                Temperature: `${Math.round(weather.main.temp)}°C`,
+                                Humidity: `${weather.main.humidity} % `,
+                            }
+                        ]
+                    },
+                    outro: 'We hope you\'ll have a great day, no matter the weather!'
+                }
+            };
+        }
+        else if (weather.weather[0].id.toString().charAt(0) == '7') {
+            response = {
+                body: {
+                    name: `${client.name}`,
+                    intro: 'Today is foggy in your city!',
+                    table: {
+                        data: [
+                            {
+                                City: `${weather.name}`,
+                                Temperature: `${Math.round(weather.main.temp)}°C`,
+                                Humidity: `${weather.main.humidity} % `,
+                            }
+                        ]
+                    },
+                    outro: 'We hope you\'ll have a great day, no matter the weather!'
+                }
+            };
+        }
+        else if (weather.weather[0].id.toString().charAt(0) == '8') {
+            response = {
+                body: {
+                    name: `${client.name}`,
+                    intro: 'Today is gonna be a sunny day in town ! ',
+                    table: {
+                        data: [
+                            {
+                                City: `${weather.name}`,
+                                Temperature: `${Math.round(weather.main.temp)}°C`,
+                                Humidity: `${weather.main.humidity} % `,
+                            }
+                        ]
+                    },
+                    outro: 'We hope you\'ll have a great sunny day!'
+                }
+            };
+        }
+        else {
+            response = {
+                body: {
+                    name: `${client.name}`,
+                    intro: 'Here is the weather for today!',
+                    table: {
+                        data: [
+                            {
+                                City: `${weather.name}`,
+                                Temperature: `${Math.round(weather.main.temp)}°C`,
+                                Humidity: `${weather.main.humidity} % `,
+                            }
+                        ]
+                    },
+                    outro: 'We hope you\'ll have a great day, no matter the weather!'
+                }
+            };
+        }
     }
 
 
@@ -240,12 +254,7 @@ async function sendm(weather, client, special = 0) {
         console.log('error occured');
         console.log(error.message);
     });
-
 }
-
-// sendm();
-
-
 
 initializePassport(passport);
 require("dotenv").config();
@@ -280,10 +289,18 @@ app.get("/set_alerte", checkNotAuthenticated, (req, res) => {
         if (result.rows[0].alert == null || result.rows[0].alert == false) {
             console.log("Alerta true");
             req.flash('success_msg', "You have subscribed to the daily alerts! We have sent you an email to confirm your subscription!");
-            let data = getWeatherData(req.user.oras_default);
-            Promise.resolve(data).then(function (value) {
-                sendm(value.current_weather, req.user, 1);
-            });
+
+            if (req.user.oras_default) {
+                let data = getWeatherData(req.user.oras_default);
+                Promise.resolve(data).then(function (value) {
+                    sendm(value.current_weather, req.user, 1);
+                });
+            } else {
+                data = getWeatherData("Bucharest");
+                Promise.resolve(data).then(function (value) {
+                    sendm(null, req.user, 1);
+                });
+            }
             pool.query('UPDATE users SET alert = true WHERE id = $1', [req.user.id], (err, result) => {
             });
             res.redirect("/users/dashboard");
@@ -313,18 +330,30 @@ app.get("/set_oras_default/:oras", checkNotAuthenticated, (req, res) => {
     city = city.replace('Ş', 'S');
     city = city.replace('Ț', 'T');
 
-    console.log("Oras default");
-    console.log(req.params.oras);
-    pool.query('UPDATE users SET oras_default = $1 WHERE id = $2', [city, req.user.id], (err, result) => {
-        if (err) {
-            req.flash('error', 'City could not be set as default');
-            res.redirect("/users/dashboard");
-        }
-        else {
-            req.flash('success_msgw', 'City set as default');
-            res.redirect("/users/dashboard");
-        }
-    });
+    if (req.params.oras == req.user.oras_default) {
+        pool.query('UPDATE users SET oras_default = NULL WHERE id = $1', [req.user.id], (err, result) => {
+            if (err) {
+                req.flash('error', 'City could not be set as default');
+                res.redirect("/users/dashboard");
+            }
+            else {
+                req.flash('error', 'City removed from default');
+                res.redirect("/users/dashboard");
+            }
+        });
+    }
+    else {
+        pool.query('UPDATE users SET oras_default = $1 WHERE id = $2', [city, req.user.id], (err, result) => {
+            if (err) {
+                req.flash('error', 'City could not be set as default');
+                res.redirect("/users/dashboard");
+            }
+            else {
+                req.flash('success_msg', 'City set as default');
+                res.redirect("/users/dashboard");
+            }
+        });
+    }
 
 });
 
@@ -408,7 +437,6 @@ app.get("/locatie_automata", function (req, res) {
     })
 
 });
-
 
 app.get("/", function (req, res) {
     // It will not fetch and display any data in the index page
@@ -504,6 +532,26 @@ app.get("/users/dashboard", checkNotAuthenticated, (req, res) => {
 
 
 
+});
+
+app.get("/users/dashboard/delete_account", checkNotAuthenticated, (req, res) => {
+    const id = req.user.id;
+    pool.query('DELETE FROM users WHERE id = $1', [id], (err, result) => {
+        if (err) {
+            console.log("Account could not be deleted");
+            req.flash("error", "Account could not be deleted");
+            return res.redirect("/");
+        }
+        if (result.rowCount === 0) {
+            console.log("No rows deleted");
+            req.flash("error", "Account could not be deleted");
+            return res.redirect("/");
+        }
+        console.log("Account deleted");
+        req.flash("success_msg", "Account deleted");
+        return res.redirect("/");
+
+    });
 });
 
 app.get("/users/logout", (req, res) => {
@@ -885,19 +933,31 @@ app.get("/users/dashboard/remove_city/:city", checkNotAuthenticated, (req, res) 
     city = city.replace('Ț', 'T');
 
     const id = req.user.id;
+    if (req.params.city == req.user.oras_default) {
+        pool.query('UPDATE users SET favorite = array_remove(favorite, $1), oras_default = NULL WHERE id = $2', [city, id], (err, result) => {
+            if (err) {
+                throw err;
+            } else {
+                req.flash("error", "City removed from favorites but also from default!");
+                res.redirect("/users/dashboard");
+            }
+        });
+    }
+    else {
 
-    pool.query('UPDATE users SET favorite = array_remove(favorite, $1) WHERE id = $2', [city, id], (err, result) => {
-        if (err) {
-            req.flash("error", "City could not be removed from favorites");
-            const red = "/users/dashboard";
-            return res.redirect(red);
-        } else {
-            console.log("City deleted");
-            req.flash("success_msg", "City removed from favorites");
-            const red = "/users/dashboard";
-            return res.redirect(red);
-        }
-    });
+        pool.query('UPDATE users SET favorite = array_remove(favorite, $1) WHERE id = $2', [city, id], (err, result) => {
+            if (err) {
+                req.flash("error", "City could not be removed from favorites");
+                // const red = "/users/dashboard";
+                res.redirect("/users/dashboard");
+            } else {
+                console.log("City deleted");
+                req.flash("success_msg", "City removed from favorites");
+                // const red = "/users/dashboard";
+                res.redirect("/users/dashboard");
+            }
+        });
+    }
 });
 
 
