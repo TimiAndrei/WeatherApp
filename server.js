@@ -19,7 +19,7 @@ var ipapi = require('ipapi.co');
 
 function get_client_alert_data() {
     return new Promise((resolve, reject) => {
-        pool.query('select email, oras_default from users WHERE alert = true', (err, result) => {
+        pool.query('select email, oras_default, name from users WHERE alert = true', (err, result) => {
             if (err) {
                 reject(err);
             } else {
@@ -37,7 +37,7 @@ async function run() {
         const client_data = await get_client_alert_data();
         for (let i = 0; i < client_data.length; i++) {
             const weatherData = await getWeatherData(client_data[i].oras_default);
-            await sendm(weatherData.current_weather, client_data[i].email);
+            await sendm(weatherData.current_weather, client_data[i]);
         }
     } catch (error) {
         console.log('error', error);
@@ -79,7 +79,7 @@ async function sendm(weather, client, special = 0) {
     if (special == 1) {
         response = {
             body: {
-                name: 'Friend',
+                name: `${client.name}`,
                 intro: 'Thank you for subscribing to our daily weather forecast!',
                 table: {
                     data: [
@@ -97,7 +97,7 @@ async function sendm(weather, client, special = 0) {
     else if (weather.weather[0].id.toString().charAt(0) == '2') {
         response = {
             body: {
-                name: 'Friend',
+                name: `${client.name}`,
                 intro: 'Take care, there is a thunderstorm in your city!',
                 table: {
                     data: [
@@ -115,7 +115,7 @@ async function sendm(weather, client, special = 0) {
     else if (weather.weather[0].id.toString().charAt(0) == '3') {
         response = {
             body: {
-                name: 'Friend',
+                name: `${client.name}`,
                 intro: 'Today there is a drizzle in your city!',
                 table: {
                     data: [
@@ -133,7 +133,7 @@ async function sendm(weather, client, special = 0) {
     else if (weather.weather[0].id.toString().charAt(0) == '5') {
         response = {
             body: {
-                name: 'Friend',
+                name: `${client.name}`,
                 intro: 'Make sure to bring an umbrella with you, today is raining !',
                 table: {
                     data: [
@@ -151,7 +151,7 @@ async function sendm(weather, client, special = 0) {
     else if (weather.weather[0].id.toString().charAt(0) == '6') {
         response = {
             body: {
-                name: 'Friend',
+                name: `${client.name}`,
                 intro: 'Make sure to bring a coat with you, today is snowing !',
                 table: {
                     data: [
@@ -169,7 +169,7 @@ async function sendm(weather, client, special = 0) {
     else if (weather.weather[0].id.toString().charAt(0) == '7') {
         response = {
             body: {
-                name: 'Friend',
+                name: `${client.name}`,
                 intro: 'Today is foggy in your city!',
                 table: {
                     data: [
@@ -187,7 +187,7 @@ async function sendm(weather, client, special = 0) {
     else if (weather.weather[0].id.toString().charAt(0) == '8') {
         response = {
             body: {
-                name: 'Friend',
+                name: `${client.name}`,
                 intro: 'Today is gonna be a sunny day in town ! ',
                 table: {
                     data: [
@@ -205,7 +205,7 @@ async function sendm(weather, client, special = 0) {
     else {
         response = {
             body: {
-                name: 'Friend',
+                name: `${client.name}`,
                 intro: 'Here is the weather for today!',
                 table: {
                     data: [
@@ -228,7 +228,7 @@ async function sendm(weather, client, special = 0) {
 
     let message = {
         from: `WeatherApp user`,
-        to: client,
+        to: client.email,
         subject: 'Weather App alert!',
         html: mail
     };
@@ -282,7 +282,7 @@ app.get("/set_alerte", checkNotAuthenticated, (req, res) => {
             req.flash('success_msg', "You have subscribed to the daily alerts! We have sent you an email to confirm your subscription!");
             let data = getWeatherData(req.user.oras_default);
             Promise.resolve(data).then(function (value) {
-                sendm(value.current_weather, req.user.email, 1);
+                sendm(value.current_weather, req.user, 1);
             });
             pool.query('UPDATE users SET alert = true WHERE id = $1', [req.user.id], (err, result) => {
             });
