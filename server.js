@@ -7,7 +7,8 @@ const { pool } = require("./dbConfig");
 const session = require("express-session");
 const flash = require("express-flash");
 const passport = require("passport");
-const fs = require('fs'); const initializePassport = require("./passportConfig");
+const fs = require('fs');
+const initializePassport = require("./passportConfig");
 const nodemailer = require('nodemailer');
 const mailgen = require('mailgen');
 const axios = require('axios');
@@ -361,28 +362,20 @@ var city_auto = '';
 
 var callback = function (res) {
     city_auto = res.city;
-    console.log(city_auto);
 };
 
 app.get("/locatie_automata", function (req, res) {
 
-    // let ip = req.ip; daca aplicatia ar fi pe net
+    // let ip = req.ip; if the app is deployed on the internet
     // let ip = '188.24.29.24'; Cluj
     // Bucuresti
     let ip = '45.250.65.105';
-    console.log(ip);
-    // Get city name passed in the form
     ipapi.location(callback, ip);
     let city = city_auto;
-    console.log(city);
-    console.log("da");
-    // Use that city name to fetch data
-    // Use the API_KEY in the '.env' file
     let url = `http://api.openweathermap.org/data/2.5/weather?q=${city}&units=metric&appid=${apiKey}`;
 
     request(url, function (err, response, body) {
 
-        // On return, check the json data fetched
         if (err) {
             res.render('index', { weather: null, error: 'Error, please try again', orase: lista_orase });
         } else {
@@ -392,15 +385,12 @@ app.get("/locatie_automata", function (req, res) {
             if (weather.main == undefined) {
                 res.render('index', { weather: null, error: 'Error, please try again', orase: lista_orase });
             } else {
-                // we shall use the data got to set up your output
                 let place = `${weather.name}, ${weather.sys.country}`,
-                    /* you shall calculate the current timezone using the data fetched*/
                     weatherTimezone = `${new Date(
                         weather.dt * 1000 - weather.timezone * 1000
                     )}`;
                 let weatherTemp = `${weather.main.temp}`,
                     weatherPressure = `${weather.main.pressure}`,
-                    /* you will fetch the weather icon and its size using the icon data*/
                     weatherIcon = `http://openweathermap.org/img/wn/${weather.weather[0].icon}@2x.png`,
                     weatherDescription = `${weather.weather[0].description}`,
                     humidity = `${weather.main.humidity}`,
@@ -410,7 +400,6 @@ app.get("/locatie_automata", function (req, res) {
                     weatherFahrenheit;
                 weatherFahrenheit = (weatherTemp * 9) / 5 + 32;
 
-                // you shall also round off the value of the degrees fahrenheit calculated into two decimal places
                 function roundToTwo(num) {
                     return +(Math.round(num + "e+2") + "e-2");
                 }
@@ -611,16 +600,12 @@ app.post("/users/register", async (req, res) => {
 
 app.post('/', function (req, res) {
 
-    // Get city name passed in the form
     let city = req.body.city;
 
-    // Use that city name to fetch data
-    // Use the API_KEY in the '.env' file
     let url = `http://api.openweathermap.org/data/2.5/weather?q=${city}&units=metric&appid=${apiKey}`;
 
     request(url, function (err, response, body) {
 
-        // On return, check the json data fetched
         if (err) {
             res.render('index', { weather: null, error: 'Error, please try again', orase: lista_orase });
         } else {
@@ -629,15 +614,14 @@ app.post('/', function (req, res) {
             if (weather.main == undefined) {
                 res.render('index', { weather: null, error: 'Error, please try again', orase: lista_orase });
             } else {
-                // we shall use the data got to set up your output
+
                 let place = `${weather.name}, ${weather.sys.country}`,
-                    /* you shall calculate the current timezone using the data fetched*/
+
                     weatherTimezone = `${new Date(
                         weather.dt * 1000 - weather.timezone * 1000
                     )}`;
                 let weatherTemp = `${weather.main.temp}`,
                     weatherPressure = `${weather.main.pressure}`,
-                    /* you will fetch the weather icon and its size using the icon data*/
                     weatherIcon = `http://openweathermap.org/img/wn/${weather.weather[0].icon}@2x.png`,
                     weatherDescription = `${weather.weather[0].description}`,
                     humidity = `${weather.main.humidity}`,
@@ -647,7 +631,6 @@ app.post('/', function (req, res) {
                     weatherFahrenheit;
                 weatherFahrenheit = (weatherTemp * 9) / 5 + 32;
 
-                // you shall also round off the value of the degrees fahrenheit calculated into two decimal places
                 function roundToTwo(num) {
                     return +(Math.round(num + "e+2") + "e-2");
                 }
@@ -690,13 +673,10 @@ app.get("/users/dashboard/:oras", function (req, res) {
     city = city.replace('Ş', 'S');
     city = city.replace('Ț', 'T');
 
-    // Use that city name to fetch data
-    // Use the API_KEY in the '.env' file
     let url = `http://api.openweathermap.org/data/2.5/weather?q=${city}&units=metric&appid=${apiKey}`;
 
     request(url, function (err, response, body) {
 
-        // On return, check the json data fetched
         if (err) {
             res.render('index', { weather: null, error: 'Error, please try again', orase: lista_orase });
         } else {
@@ -705,15 +685,12 @@ app.get("/users/dashboard/:oras", function (req, res) {
             if (weather.main == undefined) {
                 res.render('index', { weather: null, error: 'Error, please try again', orase: lista_orase });
             } else {
-                // we shall use the data got to set up your output
                 let place = `${weather.name}, ${weather.sys.country}`,
-                    /* you shall calculate the current timezone using the data fetched*/
                     weatherTimezone = `${new Date(
                         weather.dt * 1000 - weather.timezone * 1000
                     )}`;
                 let weatherTemp = `${weather.main.temp}`,
                     weatherPressure = `${weather.main.pressure}`,
-                    /* you will fetch the weather icon and its size using the icon data*/
                     weatherIcon = `http://openweathermap.org/img/wn/${weather.weather[0].icon}@2x.png`,
                     weatherDescription = `${weather.weather[0].description}`,
                     humidity = `${weather.main.humidity}`,
@@ -723,7 +700,6 @@ app.get("/users/dashboard/:oras", function (req, res) {
                     weatherFahrenheit;
                 weatherFahrenheit = (weatherTemp * 9) / 5 + 32;
 
-                // you shall also round off the value of the degrees fahrenheit calculated into two decimal places
                 function roundToTwo(num) {
                     return +(Math.round(num + "e+2") + "e-2");
                 }
@@ -767,14 +743,10 @@ app.get("/:oras", function (req, res) {
     city = city.replace('Ş', 'S');
     city = city.replace('Ț', 'T');
 
-    console.log(city);
-    // Use that city name to fetch data
-    // Use the API_KEY in the '.env' file
     let url = `http://api.openweathermap.org/data/2.5/weather?q=${city}&units=metric&appid=${apiKey}`;
 
     request(url, function (err, response, body) {
 
-        // On return, check the json data fetched
         if (err) {
             res.render('index', { weather: null, error: 'Error, please try again', orase: lista_orase });
         } else {
@@ -783,15 +755,12 @@ app.get("/:oras", function (req, res) {
             if (weather.main == undefined) {
                 res.render('index', { weather: null, error: 'Error, please try again', orase: lista_orase });
             } else {
-                // we shall use the data got to set up your output
                 let place = `${weather.name}, ${weather.sys.country}`,
-                    /* you shall calculate the current timezone using the data fetched*/
                     weatherTimezone = `${new Date(
                         weather.dt * 1000 - weather.timezone * 1000
                     )}`;
                 let weatherTemp = `${weather.main.temp}`,
                     weatherPressure = `${weather.main.pressure}`,
-                    /* you will fetch the weather icon and its size using the icon data*/
                     weatherIcon = `http://openweathermap.org/img/wn/${weather.weather[0].icon}@2x.png`,
                     weatherDescription = `${weather.weather[0].description}`,
                     humidity = `${weather.main.humidity}`,
@@ -800,8 +769,6 @@ app.get("/:oras", function (req, res) {
                     main = `${weather.weather[0].main}`,
                     weatherFahrenheit;
                 weatherFahrenheit = (weatherTemp * 9) / 5 + 32;
-
-                // you shall also round off the value of the degrees fahrenheit calculated into two decimal places
                 function roundToTwo(num) {
                     return +(Math.round(num + "e+2") + "e-2");
                 }
@@ -875,7 +842,6 @@ app.get(["/add_city/:city", "/users/dashboard/add_city/:city"], checkNotAuthenti
 
 
         } else {
-            // get rows as array
             const rows = result.rows;
             const fav = [];
             for (let i = 0; i < rows.length; i++) {
@@ -948,12 +914,10 @@ app.get("/users/dashboard/remove_city/:city", checkNotAuthenticated, (req, res) 
         pool.query('UPDATE users SET favorite = array_remove(favorite, $1) WHERE id = $2', [city, id], (err, result) => {
             if (err) {
                 req.flash("error", "City could not be removed from favorites");
-                // const red = "/users/dashboard";
                 res.redirect("/users/dashboard");
             } else {
                 console.log("City deleted");
                 req.flash("success_msg", "City removed from favorites");
-                // const red = "/users/dashboard";
                 res.redirect("/users/dashboard");
             }
         });
